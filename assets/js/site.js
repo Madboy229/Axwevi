@@ -289,6 +289,66 @@
     dateInput.max = toISO(horizon);
   }
 
+  /* --------------------------------------------- Créneaux de service ----- */
+
+  var timeSelect = $("#ftime");
+
+  var toMinutes = function (hhmm) {
+    var parts = String(hhmm || "").split(":");
+    return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+  };
+  var fromMinutes = function (total) {
+    return pad(Math.floor(total / 60)) + ":" + pad(total % 60);
+  };
+
+  /**
+   * Ne propose que les créneaux du service : en dehors de 12h–22h, il n'y a
+   * rien à choisir. Pour une réservation le jour même, les créneaux déjà
+   * passés sont retirés de la liste.
+   */
+  var buildTimeSlots = function () {
+    if (!timeSelect) return;
+
+    var open = toMinutes(CFG.OPEN_TIME || "12:00");
+    var close = toMinutes(CFG.CLOSE_TIME || "22:00");
+    var step = CFG.SLOT_MINUTES || 30;
+    var previous = timeSelect.value;
+
+    var now = new Date();
+    var isToday = dateInput && dateInput.value === toISO(now);
+    var cutoff = now.getHours() * 60 + now.getMinutes();
+
+    timeSelect.innerHTML = "";
+
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Choisir";
+    timeSelect.appendChild(placeholder);
+
+    var available = 0;
+    for (var m = open; m <= close; m += step) {
+      if (isToday && m <= cutoff) continue;
+      var option = document.createElement("option");
+      option.value = fromMinutes(m);
+      option.textContent = fromMinutes(m).replace(":", "h");
+      timeSelect.appendChild(option);
+      available += 1;
+    }
+
+    if (!available) {
+      placeholder.textContent = "Plus de créneau ce jour — choisissez une autre date";
+    }
+
+    // Garder le choix précédent tant qu'il reste proposé
+    var stillOffered = previous !== "" && Array.prototype.some.call(
+      timeSelect.options, function (o) { return o.value === previous; }
+    );
+    timeSelect.value = stillOffered ? previous : "";
+  };
+
+  buildTimeSlots();
+  if (dateInput) dateInput.addEventListener("change", buildTimeSlots);
+
   var setError = function (id, message) {
     var field = document.getElementById(id);
     var slot = document.getElementById("err-" + id);
