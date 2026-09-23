@@ -342,6 +342,37 @@
     return DIALS[i] || DIALS[0] || { code: "+229" };
   };
 
+  /**
+   * Ne garde que les chiffres, et retire le 0 de composition locale quand le
+   * pays en utilise un : beaucoup tapent « 06 12 34 56 78 » pour la France,
+   * alors qu'à l'international le numéro commence à 6. Le 0 n'est retiré que
+   * s'il fait dépasser la longueur attendue, jamais au Bénin ni en Côte
+   * d'Ivoire, où il appartient au numéro.
+   */
+  var localDigits = function (value) {
+    var entry = selectedDial();
+    var digits = String(value || "").replace(/[^0-9]/g, "");
+    if (entry.trunk && digits.charAt(0) === "0" && digits.length > (entry.max || 15)) {
+      digits = digits.slice(1);
+    }
+    return digits;
+  };
+
+  var lengthFits = function (digits, entry) {
+    var min = entry.min || 6;
+    var max = entry.max || 15;
+    return digits.length >= min && digits.length <= max;
+  };
+
+  /** « 10 chiffres », « 9 ou 10 chiffres », « entre 10 et 11 chiffres ». */
+  var expectedLength = function (entry) {
+    var min = entry.min || 6;
+    var max = entry.max || 15;
+    if (min === max) return min + " chiffres";
+    if (max - min === 1) return min + " ou " + max + " chiffres";
+    return "entre " + min + " et " + max + " chiffres";
+  };
+
   if (dialSelect && DIALS.length) {
     DIALS.forEach(function (entry) {
       var option = document.createElement("option");
@@ -466,15 +497,13 @@
     // La partie locale seule : l'indicatif vient du menu déroulant.
     // Les espaces, points et tirets sont acceptés, seuls les chiffres comptent.
     var entry = selectedDial();
-    var digits = (data.fphone || "").replace(/[^0-9]/g, "");
+    var digits = localDigits(data.fphone);
 
     if (!digits) {
       fail("fphone", "Merci d'indiquer votre numéro, il nous sert à confirmer.");
-    } else if (entry.digits && digits.length !== entry.digits) {
-      fail("fphone", "Un numéro " + (entry.pays || "") + " compte " + entry.digits +
-        " chiffres — par exemple " + (entry.exemple || "") + ".");
-    } else if (!entry.digits && (digits.length < 6 || digits.length > 15)) {
-      fail("fphone", "Ce numéro ne semble pas complet.");
+    } else if (!lengthFits(digits, entry)) {
+      fail("fphone", (entry.pays || "Ce pays") + " : le numéro compte " +
+        expectedLength(entry) + " — par exemple " + (entry.exemple || "") + ".");
     }
 
     if (!data.fdate) {
@@ -530,8 +559,16 @@
         return;
       }
 
-      // Numéro complet pour l'équipe : indicatif choisi + partie locale
-      data.fphone = selectedDial().code + " " + data.fphone;
+      // Numéro complet pour l'équipe : indicatif choisi + partie locale, en
+      // gardant l'espacement tapé par le client mais sans le 0 de composition
+      // locale, qui rendrait le numéro incomposable depuis l'étranger.
+      var dial = selectedDial();
+      var typed = String(data.fphone || "").trim();
+      if (dial.trunk && typed.replace(/[^0-9]/g, "").charAt(0) === "0" &&
+          typed.replace(/[^0-9]/g, "").length > (dial.max || 15)) {
+        typed = typed.replace("0", "").trim();
+      }
+      data.fphone = dial.code + " " + typed.replace(/\s+/g, " ");
       delete data.fdial;
 
       if (!CFG.SCRIPT_URL || CFG.SCRIPT_URL.indexOf("COLLE_ICI") !== -1) {

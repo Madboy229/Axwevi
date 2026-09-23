@@ -21,27 +21,34 @@ window.AXWEVI_CONFIG = {
 
   // Indicatifs proposés dans le formulaire. Le premier est sélectionné par
   // défaut : le Bénin, puis la sous-région, puis la diaspora.
-  // `digits` impose un nombre exact de chiffres ; sans lui, 6 à 15 sont admis.
+  //
+  // `min` et `max` = nombre de chiffres attendus une fois l'indicatif retiré.
+  // Égaux quand le pays impose une longueur fixe, différents quand elle varie.
+  //
+  // `trunk: true` = le pays fait précéder son numéro d'un 0 en composition
+  // locale, qui disparaît à l'international. On l'accepte et on le retire.
+  // Il reste à false pour le Bénin et la Côte d'Ivoire, où le 0 initial fait
+  // partie du numéro depuis leur renumérotation : le retirer le casserait.
   DIAL_CODES: [
-    { code: "+229", pays: "Bénin", digits: 10, exemple: "01 61 54 41 99" },
-    { code: "+228", pays: "Togo", exemple: "90 12 34 56" },
-    { code: "+225", pays: "Côte d'Ivoire", exemple: "01 23 45 67 89" },
-    { code: "+226", pays: "Burkina Faso", exemple: "70 12 34 56" },
-    { code: "+227", pays: "Niger", exemple: "90 12 34 56" },
-    { code: "+234", pays: "Nigeria", exemple: "802 123 4567" },
-    { code: "+233", pays: "Ghana", exemple: "24 123 4567" },
-    { code: "+221", pays: "Sénégal", exemple: "77 123 45 67" },
-    { code: "+223", pays: "Mali", exemple: "70 12 34 56" },
-    { code: "+237", pays: "Cameroun", exemple: "6 71 23 45 67" },
-    { code: "+241", pays: "Gabon", exemple: "06 12 34 56" },
-    { code: "+33", pays: "France", exemple: "6 12 34 56 78" },
-    { code: "+32", pays: "Belgique", exemple: "470 12 34 56" },
-    { code: "+41", pays: "Suisse", exemple: "78 123 45 67" },
-    { code: "+1", pays: "Canada / États-Unis", exemple: "514 123 4567" },
-    { code: "+44", pays: "Royaume-Uni", exemple: "7400 123456" },
-    { code: "+49", pays: "Allemagne", exemple: "151 12345678" },
-    { code: "+212", pays: "Maroc", exemple: "6 12 34 56 78" },
-    { code: "+971", pays: "Émirats arabes unis", exemple: "50 123 4567" }
+    { code: "+229", pays: "Bénin", min: 10, max: 10, trunk: false, exemple: "01 61 54 41 99" },
+    { code: "+228", pays: "Togo", min: 8, max: 8, trunk: false, exemple: "90 12 34 56" },
+    { code: "+225", pays: "Côte d'Ivoire", min: 10, max: 10, trunk: false, exemple: "01 23 45 67 89" },
+    { code: "+226", pays: "Burkina Faso", min: 8, max: 8, trunk: false, exemple: "70 12 34 56" },
+    { code: "+227", pays: "Niger", min: 8, max: 8, trunk: false, exemple: "90 12 34 56" },
+    { code: "+234", pays: "Nigeria", min: 10, max: 10, trunk: true, exemple: "802 123 4567" },
+    { code: "+233", pays: "Ghana", min: 9, max: 9, trunk: true, exemple: "24 123 4567" },
+    { code: "+221", pays: "Sénégal", min: 9, max: 9, trunk: false, exemple: "77 123 45 67" },
+    { code: "+223", pays: "Mali", min: 8, max: 8, trunk: false, exemple: "70 12 34 56" },
+    { code: "+237", pays: "Cameroun", min: 9, max: 9, trunk: false, exemple: "6 71 23 45 67" },
+    { code: "+241", pays: "Gabon", min: 8, max: 8, trunk: false, exemple: "06 12 34 56" },
+    { code: "+33", pays: "France", min: 9, max: 9, trunk: true, exemple: "6 12 34 56 78" },
+    { code: "+32", pays: "Belgique", min: 8, max: 9, trunk: true, exemple: "470 12 34 56" },
+    { code: "+41", pays: "Suisse", min: 9, max: 9, trunk: true, exemple: "78 123 45 67" },
+    { code: "+1", pays: "Canada / États-Unis", min: 10, max: 10, trunk: false, exemple: "514 123 4567" },
+    { code: "+44", pays: "Royaume-Uni", min: 9, max: 10, trunk: true, exemple: "7400 123456" },
+    { code: "+49", pays: "Allemagne", min: 10, max: 11, trunk: true, exemple: "151 12345678" },
+    { code: "+212", pays: "Maroc", min: 9, max: 9, trunk: true, exemple: "6 12 34 56 78" },
+    { code: "+971", pays: "Émirats arabes unis", min: 9, max: 9, trunk: true, exemple: "50 123 4567" }
   ],
 
   // Amplitude de service

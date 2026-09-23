@@ -93,9 +93,19 @@ même, les créneaux déjà passés disparaissent de la liste.
 
 Le téléphone se compose d'un indicatif à choisir et du numéro local. Le Bénin
 est proposé en premier et sélectionné par défaut, avec un exemple de numéro qui
-suit le pays choisi. La liste se règle dans `DIAL_CODES` (`assets/js/config.js`) ;
-une entrée portant `digits` impose un nombre exact de chiffres — 10 pour le Bénin.
-L'équipe reçoit le numéro complet, indicatif compris.
+suit le pays choisi. La liste se règle dans `DIAL_CODES` (`assets/js/config.js`).
+
+Chaque pays y porte sa longueur attendue, en nombre de chiffres une fois
+l'indicatif retiré : `min` et `max` égaux pour une longueur fixe (10 au Bénin,
+8 au Togo), différents quand elle varie (9 ou 10 au Royaume-Uni). Un numéro trop
+court ou trop long est refusé, avec un message qui donne la longueur attendue et
+un exemple.
+
+`trunk: true` marque les pays dont le numéro se compose localement derrière un 0
+qui disparaît à l'international : un client français peut saisir
+`06 12 34 56 78`, le 0 est retiré et l'équipe reçoit `+33 6 12 34 56 78`. Le
+Bénin et la Côte d'Ivoire sont à `false` — leur 0 initial fait partie du numéro
+et doit être conservé.
 
 Les plats se choisissent en quantité, jusqu'à 20 parts par plat, et arrivent
 dans le tableau de bord sous la forme `2 × Agneau Royal, 1 × Monyo`.
