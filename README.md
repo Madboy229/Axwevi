@@ -91,6 +91,12 @@ L'heure se choisit dans une liste de créneaux de 30 minutes allant de 12h00 à
 22h00 : rien en dehors du service n'est proposé. Pour une réservation le jour
 même, les créneaux déjà passés disparaissent de la liste.
 
+Le téléphone se compose d'un indicatif à choisir et du numéro local. Le Bénin
+est proposé en premier et sélectionné par défaut, avec un exemple de numéro qui
+suit le pays choisi. La liste se règle dans `DIAL_CODES` (`assets/js/config.js`) ;
+une entrée portant `digits` impose un nombre exact de chiffres — 10 pour le Bénin.
+L'équipe reçoit le numéro complet, indicatif compris.
+
 Les plats se choisissent en quantité, jusqu'à 20 parts par plat, et arrivent
 dans le tableau de bord sous la forme `2 × Agneau Royal, 1 × Monyo`.
 
