@@ -373,6 +373,43 @@
     return "entre " + min + " et " + max + " chiffres";
   };
 
+  /**
+   * Borne la saisie en direct : lettres et symboles écartés, et pas un
+   * chiffre de plus que ce que le pays autorise. Un pays à 0 de composition
+   * locale tolère un chiffre de plus, le temps que ce 0 soit retiré à l'envoi.
+   */
+  var capPhoneInput = function () {
+    if (!phoneInput) return;
+
+    var entry = selectedDial();
+    var allowed = (entry.max || 15) + (entry.trunk ? 1 : 0);
+    var raw = phoneInput.value;
+    var caret = phoneInput.selectionStart;
+
+    var out = "";
+    var count = 0;
+    var dropped = false;
+    for (var i = 0; i < raw.length; i++) {
+      var ch = raw.charAt(i);
+      if (ch >= "0" && ch <= "9") {
+        if (count >= allowed) { dropped = true; continue; }
+        count += 1;
+        out += ch;
+      } else if (ch === " " || ch === "." || ch === "-") {
+        out += ch;                             // séparateurs de confort
+      }
+    }
+
+    // Le numéro est complet : pas de séparateur orphelin en fin de champ
+    if (dropped) out = out.replace(/[\s.-]+$/, "");
+
+    if (out === raw) return;
+
+    phoneInput.value = out;
+    var moved = Math.max(0, caret - (raw.length - out.length));
+    try { phoneInput.setSelectionRange(moved, moved); } catch (e) { /* ignore */ }
+  };
+
   if (dialSelect && DIALS.length) {
     DIALS.forEach(function (entry) {
       var option = document.createElement("option");
@@ -382,13 +419,17 @@
     });
     dialSelect.selectedIndex = 0;              // Bénin par défaut
 
-    // L'exemple affiché suit le pays choisi
+    // L'exemple affiché suit le pays choisi, et la saisie est retaillée si le
+    // nouveau pays attend un numéro plus court
     dialSelect.addEventListener("change", function () {
       var entry = selectedDial();
       if (phoneInput) phoneInput.placeholder = entry.exemple || "";
+      capPhoneInput();
       setError("fphone", "");
     });
   }
+
+  if (phoneInput) phoneInput.addEventListener("input", capPhoneInput);
 
   /* --------------------------------------------- Créneaux de service ----- */
 
