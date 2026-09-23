@@ -56,10 +56,11 @@ Toute la carte vit dans `index.html`, section `<section class="menu">`, sous
 forme de blocs `<article class="dish">`. Pour ajouter un plat, dupliquer un
 bloc existant et changer le nom, le prix et les descriptions.
 
-Les cases à cocher « Plats souhaités » du formulaire sont **construites
-automatiquement** à partir de la carte : rien à tenir à jour en double. Pour
-qu'un élément n'apparaisse pas dans ces cases (les accompagnements, les
-boissons), lui ajouter l'attribut `data-no-pick` :
+Le sélecteur « Plats souhaités » du formulaire est **construit automatiquement**
+à partir de la carte : rien à tenir à jour en double. Chaque plat y porte un
+compteur, pour qu'une tablée puisse en commander plusieurs parts. Pour qu'un
+élément n'y apparaisse pas (les accompagnements, les boissons), lui ajouter
+l'attribut `data-no-pick` :
 
 ```html
 <article class="dish" data-no-pick>
@@ -82,6 +83,9 @@ personnes et le type de table (**Salle** ou **Espace VIP**, Salle par défaut).
 Le choix des plats et le message restent facultatifs. Sont refusées côté
 navigateur : les dates passées, les dimanches (fermeture) et les heures hors
 service.
+
+Les plats se choisissent en quantité, jusqu'à 20 parts par plat, et arrivent
+dans le tableau de bord sous la forme `2 × Agneau Royal, 1 × Monyo`.
 
 Une demande VIP est signalée dans le tableau de bord par un badge doré, un
 liseré sur la fiche, un compteur dédié et un filtre.

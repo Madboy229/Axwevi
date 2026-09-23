@@ -128,8 +128,36 @@
      formulaire en sont dérivées, donc elles ne peuvent pas se désynchroniser. */
 
   var picker = $("#dishPicker");
+  var pickerSummary = null;
+  var MAX_PER_DISH = 20;
+
+  /** Liste des plats choisis, sous la forme « 2 × Agneau Royal ». */
+  var chosenDishes = function () {
+    if (!picker) return [];
+    return $$(".qty__input", picker).reduce(function (acc, input) {
+      var n = parseInt(input.value, 10) || 0;
+      if (n > 0) acc.push(n + " × " + input.dataset.dish);
+      return acc;
+    }, []);
+  };
+
+  var updatePickerSummary = function () {
+    if (!pickerSummary) return;
+    var chosen = chosenDishes();
+    var total = chosen.reduce(function (sum, line) {
+      return sum + parseInt(line, 10);
+    }, 0);
+
+    pickerSummary.textContent = total
+      ? total + " plat" + (total > 1 ? "s" : "") + " sélectionné" + (total > 1 ? "s" : "") +
+        " : " + chosen.join(", ")
+      : "Aucun plat sélectionné pour l'instant.";
+    pickerSummary.classList.toggle("is-filled", total > 0);
+  };
 
   if (picker) {
+    var dishIndex = 0;
+
     $$(".menu-panel").forEach(function (panel) {
       var dishes = $$(".dish:not([data-no-pick])", panel);
       if (!dishes.length) return;
@@ -143,24 +171,102 @@
       group.appendChild(cat);
 
       dishes.forEach(function (dish) {
-        var name = $(".dish__name", dish);
-        if (!name) return;
-        var label = document.createElement("label");
-        label.className = "dish-picker__item";
+        var nameEl = $(".dish__name", dish);
+        if (!nameEl) return;
 
-        var box = document.createElement("input");
-        box.type = "checkbox";
-        box.name = "fdishes";
-        box.value = name.textContent.trim();
+        var dishName = nameEl.textContent.trim();
+        var labelId = "dishname-" + (dishIndex += 1);
 
-        label.appendChild(box);
-        label.appendChild(document.createTextNode(" " + name.textContent.trim()));
-        group.appendChild(label);
+        var row = document.createElement("div");
+        row.className = "dish-picker__item";
+
+        var name = document.createElement("span");
+        name.className = "dish-picker__name";
+        name.id = labelId;
+        name.textContent = dishName;
+        row.appendChild(name);
+
+        var qty = document.createElement("div");
+        qty.className = "qty";
+
+        var minus = document.createElement("button");
+        minus.type = "button";
+        minus.className = "qty__btn";
+        minus.textContent = "−";
+        minus.setAttribute("aria-label", "Retirer une part de " + dishName);
+
+        var input = document.createElement("input");
+        input.type = "number";
+        input.className = "qty__input";
+        input.value = "0";
+        input.min = "0";
+        input.max = String(MAX_PER_DISH);
+        input.step = "1";
+        input.inputMode = "numeric";
+        input.dataset.dish = dishName;
+        input.setAttribute("aria-labelledby", labelId);
+
+        var plus = document.createElement("button");
+        plus.type = "button";
+        plus.className = "qty__btn";
+        plus.textContent = "+";
+        plus.setAttribute("aria-label", "Ajouter une part de " + dishName);
+
+        var apply = function (delta) {
+          var current = parseInt(input.value, 10) || 0;
+          var next = Math.min(MAX_PER_DISH, Math.max(0, current + delta));
+          input.value = String(next);
+          row.classList.toggle("is-chosen", next > 0);
+          minus.disabled = next === 0;
+          updatePickerSummary();
+        };
+
+        minus.disabled = true;
+        minus.addEventListener("click", function () { apply(-1); });
+        plus.addEventListener("click", function () { apply(1); });
+
+        // Saisie directe au clavier : on borne et on resynchronise l'affichage
+        input.addEventListener("input", function () {
+          var n = parseInt(input.value, 10);
+          if (isNaN(n) || n < 0) n = 0;
+          if (n > MAX_PER_DISH) n = MAX_PER_DISH;
+          input.value = String(n);
+          row.classList.toggle("is-chosen", n > 0);
+          minus.disabled = n === 0;
+          updatePickerSummary();
+        });
+
+        qty.appendChild(minus);
+        qty.appendChild(input);
+        qty.appendChild(plus);
+        row.appendChild(qty);
+        group.appendChild(row);
       });
 
       picker.appendChild(group);
     });
+
+    pickerSummary = document.createElement("p");
+    pickerSummary.className = "dish-picker__summary";
+    pickerSummary.setAttribute("aria-live", "polite");
+    picker.insertAdjacentElement("afterend", pickerSummary);
+    updatePickerSummary();
   }
+
+  /** Remet tous les compteurs à zéro après un envoi réussi. */
+  var resetDishPicker = function () {
+    if (!picker) return;
+    $$(".qty__input", picker).forEach(function (input) {
+      input.value = "0";
+      var row = input.closest(".dish-picker__item");
+      if (row) {
+        row.classList.remove("is-chosen");
+        var minus = $(".qty__btn", row);
+        if (minus) minus.disabled = true;
+      }
+    });
+    updatePickerSummary();
+  };
 
   /* ------------------------------------------------- Formulaire ---------- */
 
@@ -274,9 +380,9 @@
       var formData = new FormData(form);
       var data = {};
       formData.forEach(function (value, key) {
-        if (key !== "fdishes") data[key] = typeof value === "string" ? value.trim() : value;
+        data[key] = typeof value === "string" ? value.trim() : value;
       });
-      data.fdishes = formData.getAll("fdishes").join(", ");
+      data.fdishes = chosenDishes().join(", ");
 
       var bad = validate(data);
       if (bad) {
@@ -321,6 +427,7 @@
           );
           form.reset();
           clearErrors();
+          resetDishPicker();
         })
         .catch(function () {
           showMessage(
