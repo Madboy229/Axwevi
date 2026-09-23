@@ -1,0 +1,21 @@
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+
+# Archives et sauvegardes locales
+*.zip
+*.bak
+*~
+
+# Ne jamais versionner un fichier de secrets
+secrets.*
+*.key
+
+# Outillage local de l apercu
+.claude/

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://madboy229.github.io/Axwevi/sitemap.xml
