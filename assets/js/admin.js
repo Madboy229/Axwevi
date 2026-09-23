@@ -38,7 +38,9 @@
     key: "",
     items: [],
     filter: "all",
-    search: ""
+    search: "",
+    period: "today",   // vue de travail par défaut : le service du jour
+    month: ""          // « AAAA-MM » quand on consulte un mois précis
   };
 
   /* ------------------------------------------------------------ Réseau --- */
@@ -157,6 +159,91 @@
   }
 
   if (refreshBtn) refreshBtn.addEventListener("click", load);
+
+  /* ------------------------------------------------------------ Période -- */
+
+  var periodLabel = $("#periodLabel");
+  var monthInput = $("#monthInput");
+
+  var isoOf = function (d) {
+    return d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
+  };
+
+  /** La réservation tombe-t-elle dans la période consultée ? */
+  var inPeriod = function (item) {
+    var key = dateKey(item.Date);
+
+    // Une ligne sans date exploitable ne doit pas disparaître silencieusement :
+    // elle reste visible dans l'historique complet.
+    if (!key) return !state.month && state.period === "all";
+
+    if (state.month) return key.slice(0, 7) === state.month;
+
+    var now = new Date();
+    var today = isoOf(now);
+
+    if (state.period === "today") return key === today;
+
+    if (state.period === "tomorrow") {
+      var t = new Date(now.getTime());
+      t.setDate(t.getDate() + 1);
+      return key === isoOf(t);
+    }
+
+    if (state.period === "week") {
+      var end = new Date(now.getTime());
+      end.setDate(end.getDate() + 6);
+      return key >= today && key <= isoOf(end);
+    }
+
+    if (state.period === "month") return key.slice(0, 7) === today.slice(0, 7);
+
+    return true;                                   // tout l'historique
+  };
+
+  var describePeriod = function () {
+    if (state.month) {
+      var m = new Date(state.month + "-01T00:00:00");
+      var name = m.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+    if (state.period === "today") {
+      return "Aujourd'hui, " + new Date().toLocaleDateString("fr-FR", {
+        weekday: "long", day: "numeric", month: "long"
+      });
+    }
+    if (state.period === "tomorrow") return "Demain";
+    if (state.period === "week") return "Les 7 prochains jours";
+    if (state.period === "month") return "Ce mois-ci";
+    return "Tout l'historique";
+  };
+
+  var clearPeriodChips = function () {
+    document.querySelectorAll(".chip[data-period]").forEach(function (c) {
+      c.setAttribute("aria-pressed", "false");
+    });
+  };
+
+  document.querySelectorAll(".chip[data-period]").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      state.month = "";
+      if (monthInput) monthInput.value = "";
+      clearPeriodChips();
+      chip.setAttribute("aria-pressed", "true");
+      state.period = chip.dataset.period;
+      render();
+    });
+  });
+
+  if (monthInput) {
+    monthInput.addEventListener("change", function () {
+      state.month = monthInput.value;
+      if (state.month) clearPeriodChips();
+      render();
+    });
+  }
 
   /* ------------------------------------------------------------ Filtres -- */
 
@@ -516,10 +603,11 @@
       });
   }
 
-  var renderStats = function () {
-    var counts = { total: state.items.length, vip: 0 };
+  /** Les compteurs portent sur la période consultée, pas sur tout l'historique. */
+  var renderStats = function (scope) {
+    var counts = { total: scope.length, vip: 0 };
     STATUSES.forEach(function (s) { counts[s] = 0; });
-    state.items.forEach(function (it) {
+    scope.forEach(function (it) {
       var s = it.Statut || "En attente";
       if (counts[s] !== undefined) counts[s] += 1;
       if (it.VIP === "VIP") counts.vip += 1;
@@ -531,11 +619,22 @@
     $("#statVip").textContent = counts.vip;
   };
 
+  /** Ordre de service : par date, puis par heure. */
+  var byDateTime = function (a, b) {
+    var ka = dateKey(a.Date) + " " + String(a.Heure || "");
+    var kb = dateKey(b.Date) + " " + String(b.Heure || "");
+    return ka < kb ? -1 : (ka > kb ? 1 : 0);
+  };
+
   function render() {
-    renderStats();
+    var inScope = state.items.filter(inPeriod);
+
+    renderStats(inScope);
     renderVipBoard();
 
-    var visible = state.items.filter(function (it) {
+    if (periodLabel) periodLabel.textContent = describePeriod();
+
+    var visible = inScope.filter(function (it) {
       var status = it.Statut || "En attente";
 
       if (state.filter === "VIP") {
@@ -548,7 +647,7 @@
       var haystack = [it.Nom, it.Telephone, it.Email, it.Date, it.Plats, it.Message, it.VIP]
         .join(" ").toLowerCase();
       return haystack.indexOf(state.search) !== -1;
-    });
+    }).sort(byDateTime);
 
     countLabel.textContent = visible.length + " réservation" +
       (visible.length > 1 ? "s" : "") + " affichée" + (visible.length > 1 ? "s" : "");
@@ -556,11 +655,16 @@
     listArea.innerHTML = "";
 
     if (!visible.length) {
-      setStateMessage(
-        state.items.length
-          ? "Aucune réservation ne correspond à ce filtre."
-          : "Aucune réservation pour le moment."
-      );
+      var reason;
+      if (!state.items.length) {
+        reason = "Aucune réservation pour le moment.";
+      } else if (!inScope.length) {
+        reason = "Aucune réservation sur cette période. Essayez « Tout l'historique » " +
+          "ou choisissez un autre mois.";
+      } else {
+        reason = "Aucune réservation ne correspond à ce filtre sur cette période.";
+      }
+      setStateMessage(reason);
       return;
     }
 
