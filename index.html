@@ -45,7 +45,7 @@
   },
   "telephone": "+2290161544199",
   "url": "https://madboy229.github.io/Axwevi/",
-  "sameAs": ["https://instagram.com/axwevi.restaurant"],
+  "sameAs": ["https://www.instagram.com/axwevi.restaurant/"],
   "openingHoursSpecification": [{
     "@type": "OpeningHoursSpecification",
     "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -451,7 +451,7 @@
           <h3>Contact</h3>
           <p><a href="tel:+2290161544199">+229 01 61 54 41 99</a></p>
           <p><a href="https://wa.me/2290161544199" target="_blank" rel="noopener">Écrire sur WhatsApp</a></p>
-          <p><a href="https://instagram.com/axwevi.restaurant" target="_blank" rel="noopener">@axwevi.restaurant</a></p>
+          <p><a href="https://www.instagram.com/axwevi.restaurant/" target="_blank" rel="noopener">@axwevi.restaurant</a></p>
         </div>
       </div>
     </div>
@@ -497,8 +497,11 @@
               </div>
               <div class="field">
                 <label for="ftime">Heure *</label>
-                <input type="time" id="ftime" name="ftime" min="12:00" max="22:00"
-                       step="900" required aria-describedby="err-ftime">
+                <!-- Créneaux générés par site.js d'après les horaires de config.js :
+                     rien en dehors du service ne peut être sélectionné. -->
+                <select id="ftime" name="ftime" required aria-describedby="err-ftime">
+                  <option value="">Choisir</option>
+                </select>
                 <p class="field__error" id="err-ftime"></p>
               </div>
             </div>
@@ -574,7 +577,7 @@
       <li><a href="#menu">Carte</a></li>
       <li><a href="#infos">Infos</a></li>
       <li><a href="tel:+2290161544199">+229 01 61 54 41 99</a></li>
-      <li><a href="https://instagram.com/axwevi.restaurant" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a href="https://www.instagram.com/axwevi.restaurant/" target="_blank" rel="noopener">Instagram</a></li>
     </ul>
     <div class="foot-bottom">© <span id="year"></span> Axwevi · Saint Michel, Cotonou · Tous droits réservés</div>
   </div>

@@ -23,6 +23,9 @@ window.AXWEVI_CONFIG = {
   OPEN_TIME: "12:00",
   CLOSE_TIME: "22:00",
 
+  // Pas entre deux créneaux proposés, en minutes
+  SLOT_MINUTES: 30,
+
   // Combien de jours à l'avance on peut réserver
   MAX_DAYS_AHEAD: 120,
 

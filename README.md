@@ -72,7 +72,11 @@ l'attribut `data-no-pick` :
   pied de page, plus le bloc `application/ld+json` en haut du fichier (la fiche
   lue par Google).
 - Ce qui est **contrôlé à la saisie** : dans `assets/js/config.js`
-  (`OPEN_TIME`, `CLOSE_TIME`, `CLOSED_DAYS`, `MAX_DAYS_AHEAD`).
+  (`OPEN_TIME`, `CLOSE_TIME`, `SLOT_MINUTES`, `CLOSED_DAYS`, `MAX_DAYS_AHEAD`).
+
+La liste des heures proposées est construite depuis ces réglages : élargir le
+service ou passer les créneaux au quart d'heure ne demande que de changer
+`CLOSE_TIME` ou `SLOT_MINUTES`.
 
 Penser à modifier les deux, sinon le formulaire et la page se contredisent.
 
@@ -81,8 +85,11 @@ Penser à modifier les deux, sinon le formulaire et la page se contredisent.
 Le formulaire exige le nom, le téléphone, la date, l'heure, le nombre de
 personnes et le type de table (**Salle** ou **Espace VIP**, Salle par défaut).
 Le choix des plats et le message restent facultatifs. Sont refusées côté
-navigateur : les dates passées, les dimanches (fermeture) et les heures hors
-service.
+navigateur : les dates passées et les dimanches (fermeture).
+
+L'heure se choisit dans une liste de créneaux de 30 minutes allant de 12h00 à
+22h00 : rien en dehors du service n'est proposé. Pour une réservation le jour
+même, les créneaux déjà passés disparaissent de la liste.
 
 Les plats se choisissent en quantité, jusqu'à 20 parts par plat, et arrivent
 dans le tableau de bord sous la forme `2 × Agneau Royal, 1 × Monyo`.
