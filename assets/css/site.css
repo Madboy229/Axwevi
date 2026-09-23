@@ -25,14 +25,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Par-dessus le hero terracotta la navigation est crème ; une fois la page
+   défilée, elle passe sur fond clair et reprend les teintes sombres. */
 .nav__mark {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.15rem;
   letter-spacing: 0.3em;
-  color: var(--ink-900);
+  color: var(--cream-50);
   text-decoration: none;
+  transition: color var(--dur) var(--ease);
 }
+.nav.is-scrolled .nav__mark { color: var(--ink-900); }
 
 .nav__links {
   display: flex;
@@ -47,9 +51,10 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--ink-600);
+  color: var(--cream-50);
+  opacity: 0.88;
   padding-block: 4px;
-  transition: color var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease), opacity 0.2s var(--ease);
 }
 .nav__links a::after {
   content: "";
@@ -58,19 +63,46 @@
   bottom: 0;
   width: 100%;
   height: 1px;
-  background: var(--terracotta-500);
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: right;
   transition: transform var(--dur) var(--ease);
 }
-.nav__links a:hover { color: var(--terracotta-700); }
+.nav__links a:hover { opacity: 1; }
 .nav__links a:hover::after,
 .nav__links a[aria-current="true"]::after {
   transform: scaleX(1);
   transform-origin: left;
 }
 
-.nav__cta { padding: 12px 26px; }
+.nav.is-scrolled .nav__links a { color: var(--ink-600); opacity: 1; }
+.nav.is-scrolled .nav__links a:hover { color: var(--terracotta-700); }
+
+.nav__cta {
+  padding: 11px 24px;
+  border: 1px solid var(--cream-50);
+  border-radius: 999px;
+  color: var(--cream-50);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.nav__cta:hover {
+  background: var(--cream-50);
+  color: var(--terracotta-700);
+}
+.nav.is-scrolled .nav__cta {
+  border-color: var(--terracotta-700);
+  color: var(--terracotta-700);
+}
+.nav.is-scrolled .nav__cta:hover {
+  background: var(--terracotta-700);
+  color: var(--cream-50);
+}
 
 /* Bouton burger — masqué au-dessus de 900px */
 .nav__burger {
@@ -80,15 +112,18 @@
   align-items: center;
   justify-content: center;
   background: none;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(251, 246, 238, 0.45);
   border-radius: 50%;
+  transition: border-color var(--dur) var(--ease);
 }
+.nav.is-scrolled .nav__burger { border-color: var(--line); }
+
 .nav__burger span {
   display: block;
   position: relative;
   width: 18px;
   height: 1.5px;
-  background: var(--ink-900);
+  background: var(--cream-50);
   transition: background 0.2s var(--ease);
 }
 .nav__burger span::before,
@@ -98,15 +133,20 @@
   left: 0;
   width: 100%;
   height: 1.5px;
-  background: var(--ink-900);
-  transition: transform var(--dur) var(--ease);
+  background: var(--cream-50);
+  transition: transform var(--dur) var(--ease), background 0.2s var(--ease);
 }
+.nav.is-scrolled .nav__burger span,
+.nav.is-scrolled .nav__burger span::before,
+.nav.is-scrolled .nav__burger span::after { background: var(--ink-900); }
 .nav__burger span::before { top: -6px; }
 .nav__burger span::after { top: 6px; }
 
-.nav__burger[aria-expanded="true"] span { background: transparent; }
-.nav__burger[aria-expanded="true"] span::before { transform: translateY(6px) rotate(45deg); }
-.nav__burger[aria-expanded="true"] span::after { transform: translateY(-6px) rotate(-45deg); }
+/* Le sélecteur porte .nav pour rester prioritaire sur l'état défilé ci-dessus,
+   sinon la barre centrale resterait visible au lieu de former la croix. */
+.nav .nav__burger[aria-expanded="true"] span { background: transparent; }
+.nav .nav__burger[aria-expanded="true"] span::before { transform: translateY(6px) rotate(45deg); }
+.nav .nav__burger[aria-expanded="true"] span::after { transform: translateY(-6px) rotate(-45deg); }
 
 @media (max-width: 900px) {
   .nav__burger { display: flex; }
@@ -126,13 +166,18 @@
     transition: transform var(--dur) var(--ease);
   }
   .nav__links.is-open { transform: none; }
-  .nav__links a {
+
+  /* Le tiroir est sur fond crème : le texte y repasse en sombre */
+  .nav .nav__links a,
+  .nav.is-scrolled .nav__links a {
     display: block;
     font-size: var(--step-1);
     font-family: var(--font-display);
     text-transform: none;
     letter-spacing: 0;
     padding-block: 14px;
+    color: var(--ink-900);
+    opacity: 1;
     border-bottom: 1px solid var(--line);
   }
   .nav__links a::after { display: none; }
@@ -152,54 +197,59 @@ body.is-locked { overflow: hidden; }
   text-align: center;
   padding: 140px var(--gutter) 90px;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(221, 138, 83, 0.22), transparent 70%),
-    linear-gradient(180deg, var(--cream-100) 0%, var(--cream-50) 100%);
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
+    linear-gradient(180deg, var(--terracotta-700) 0%, #8a3818 100%);
   overflow: hidden;
 }
 
-/* Halo tournant, très lent, purement décoratif */
+/* Chevrons inspirés des tissages ouest-africains, très discrets */
 .hero::before {
   content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 140vmax;
-  height: 140vmax;
-  transform: translate(-50%, -50%);
-  background: conic-gradient(from 0deg,
-    transparent 0deg, rgba(184, 137, 79, 0.06) 60deg,
-    transparent 120deg, rgba(197, 101, 46, 0.05) 200deg, transparent 280deg);
-  animation: hero-drift 60s linear infinite;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='44' viewBox='0 0 88 44'%3E%3Cpath d='M4 4 L26 40 L48 4 L70 40' stroke='%23ffffff' stroke-width='1.6' fill='none' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 220px 110px;
   pointer-events: none;
-}
-@keyframes hero-drift {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .hero > * { position: relative; z-index: 1; }
 
-.hero__eyebrow { margin-bottom: 26px; }
+.hero__eyebrow {
+  color: var(--cream-100);
+  opacity: 0.85;
+  margin-bottom: 26px;
+}
 
 .hero__title {
   font-size: var(--step-4);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--ink-900);
+  color: var(--cream-50);
   margin: 0;
-}
-
-.hero__rule {
-  width: 72px;
-  height: 1px;
-  background: var(--gold);
-  margin: 28px auto;
 }
 
 .hero__tagline {
   font-size: var(--step-2);
+  color: var(--cream-100);
+  margin: 22px 0 0;
+}
+
+/* Sur le terracotta, les boutons s'inversent */
+.hero .btn--solid {
+  background: var(--cream-50);
   color: var(--terracotta-700);
-  margin: 0;
+}
+.hero .btn--solid:hover { background: var(--cream-100); }
+
+.hero .btn--ghost {
+  border-color: rgba(251, 246, 238, 0.5);
+  color: var(--cream-50);
+}
+.hero .btn--ghost:hover {
+  background: transparent;
+  border-color: var(--cream-50);
+  color: var(--cream-50);
 }
 
 .hero__cta-row {
@@ -215,7 +265,8 @@ body.is-locked { overflow: hidden; }
   font-size: var(--step--1);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-400);
+  color: var(--cream-100);
+  opacity: 0.7;
 }
 
 .hero__scroll {
@@ -226,7 +277,8 @@ body.is-locked { overflow: hidden; }
   font-size: 0.72rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--ink-400);
+  color: var(--cream-100);
+  opacity: 0.7;
 }
 .hero__scroll::after {
   content: "";
@@ -234,7 +286,7 @@ body.is-locked { overflow: hidden; }
   width: 1px;
   height: 34px;
   margin: 12px auto 0;
-  background: linear-gradient(var(--ink-400), transparent);
+  background: linear-gradient(var(--cream-100), transparent);
   animation: scroll-pulse 2.4s var(--ease) infinite;
 }
 @keyframes scroll-pulse {
