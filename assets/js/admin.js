@@ -521,6 +521,31 @@
     top.appendChild(badges);
     card.appendChild(top);
 
+    // Le téléphone sort de la grille : c'est le champ le plus utilisé, il doit
+    // se lire sans chercher et se composer d'un seul geste.
+    if (item.Telephone || item.Email) {
+      var contact = document.createElement("div");
+      contact.className = "card__contact";
+
+      if (item.Telephone) {
+        var phone = document.createElement("a");
+        phone.className = "card__phone";
+        phone.href = "tel:" + String(item.Telephone).replace(/[^0-9+]/g, "");
+        phone.textContent = item.Telephone;
+        contact.appendChild(phone);
+      }
+
+      if (item.Email) {
+        var mail = document.createElement("a");
+        mail.className = "card__email";
+        mail.href = "mailto:" + item.Email;
+        mail.textContent = item.Email;
+        contact.appendChild(mail);
+      }
+
+      card.appendChild(contact);
+    }
+
     // Détails
     var grid = document.createElement("dl");
     grid.className = "card__grid";
@@ -529,12 +554,9 @@
     grid.appendChild(defItem("Personnes", item.Personnes || "—"));
     grid.appendChild(defItem("Table", isVip ? "Espace VIP" : "Salle"));
 
-    if (item.Telephone) {
-      grid.appendChild(defItem("Téléphone", item.Telephone,
-        "tel:" + String(item.Telephone).replace(/[^0-9+]/g, "")));
-    }
-    if (item.Email) {
-      grid.appendChild(defItem("Email", item.Email, "mailto:" + item.Email));
+    if (!item.Telephone) {
+      // Sans numéro, impossible de confirmer : il faut que ça se voie.
+      grid.appendChild(defItem("Téléphone", "Non renseigné"));
     }
     if (item.Plats) {
       grid.appendChild(defItem("Plats souhaités", item.Plats));
