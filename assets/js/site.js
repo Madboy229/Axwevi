@@ -26,33 +26,74 @@
     window.addEventListener("scroll", setNavState, { passive: true });
   }
 
-  var closeMenu = function () {
-    if (!burger) return;
+  var scrim = $("#navScrim");
+  var scrollLockY = 0;
+
+  /* Figer le corps suffit à bloquer la page, mais lui fait perdre sa position :
+     on la mémorise pour la rendre telle quelle à la fermeture. */
+  var lockScroll = function () {
+    scrollLockY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = (-scrollLockY) + "px";
+    document.body.classList.add("is-locked");
+  };
+
+  var unlockScroll = function () {
+    if (!document.body.classList.contains("is-locked")) return;
+    document.body.classList.remove("is-locked");
+    document.body.style.top = "";
+
+    // Retour sans animation, sinon la page « remonte » sous les yeux
+    var root = document.documentElement;
+    var behavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, scrollLockY);
+    root.style.scrollBehavior = behavior;
+  };
+
+  var isMenuOpen = function () {
+    return Boolean(burger) && burger.getAttribute("aria-expanded") === "true";
+  };
+
+  var closeMenu = function (returnFocus) {
+    if (!burger || !isMenuOpen()) return;
     burger.setAttribute("aria-expanded", "false");
     burger.setAttribute("aria-label", "Ouvrir le menu");
     navLinks.classList.remove("is-open");
-    document.body.classList.remove("is-locked");
+    if (scrim) scrim.classList.remove("is-visible");
+    unlockScroll();
+    if (returnFocus) burger.focus();
+  };
+
+  var openMenu = function () {
+    if (!burger || isMenuOpen()) return;
+    burger.setAttribute("aria-expanded", "true");
+    burger.setAttribute("aria-label", "Fermer le menu");
+    navLinks.classList.add("is-open");
+    if (scrim) scrim.classList.add("is-visible");
+    lockScroll();
   };
 
   if (burger && navLinks) {
     burger.addEventListener("click", function () {
-      var open = burger.getAttribute("aria-expanded") === "true";
-      if (open) {
-        closeMenu();
-      } else {
-        burger.setAttribute("aria-expanded", "true");
-        burger.setAttribute("aria-label", "Fermer le menu");
-        navLinks.classList.add("is-open");
-        document.body.classList.add("is-locked");
-      }
+      if (isMenuOpen()) closeMenu();
+      else openMenu();
     });
 
-    // Refermer dès qu'on navigue, ou sur Échap
+    // Trois sorties possibles : la croix, le voile, la touche Échap
+    if (scrim) scrim.addEventListener("click", function () { closeMenu(); });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeMenu(true);
+    });
+
+    // Refermer dès qu'on navigue
     navLinks.addEventListener("click", function (e) {
       if (e.target.closest("a")) closeMenu();
     });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeMenu();
+
+    // Repasser en écran large ne doit pas laisser le corps figé
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 900) closeMenu();
     });
   }
 

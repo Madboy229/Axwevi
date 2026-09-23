@@ -142,19 +142,55 @@
 .nav__burger span::before { top: -6px; }
 .nav__burger span::after { top: 6px; }
 
-/* Le sélecteur porte .nav pour rester prioritaire sur l'état défilé ci-dessus,
-   sinon la barre centrale resterait visible au lieu de former la croix. */
+/* Menu ouvert : la croix se détache sur le tiroir crème, quel que soit l'état
+   de défilement. Le sélecteur porte .nav pour rester prioritaire sur les
+   règles d'état défilé ci-dessus. */
+.nav .nav__burger[aria-expanded="true"] {
+  border-color: var(--line-strong);
+}
 .nav .nav__burger[aria-expanded="true"] span { background: transparent; }
+.nav .nav__burger[aria-expanded="true"] span::before,
+.nav .nav__burger[aria-expanded="true"] span::after {
+  background: var(--ink-900);
+}
 .nav .nav__burger[aria-expanded="true"] span::before { transform: translateY(6px) rotate(45deg); }
 .nav .nav__burger[aria-expanded="true"] span::after { transform: translateY(-6px) rotate(-45deg); }
 
+/* --- Voile derrière le tiroir ------------------------------------------- */
+
+.nav__scrim { display: none; }
+
 @media (max-width: 900px) {
-  .nav__burger { display: flex; }
+  .nav__scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: rgba(42, 28, 20, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .nav__scrim.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Ordre d'empilement explicite : le bouton reste au-dessus du tiroir,
+     qui reste au-dessus du voile. */
+  .nav__burger {
+    display: flex;
+    position: relative;
+    z-index: 3;
+  }
   .nav__cta { display: none; }
 
   .nav__links {
     position: fixed;
     inset: 0 0 0 auto;
+    z-index: 2;
     width: min(320px, 82vw);
     flex-direction: column;
     justify-content: center;
@@ -183,7 +219,16 @@
   .nav__links a::after { display: none; }
 }
 
-body.is-locked { overflow: hidden; }
+/* Verrou de défilement. `overflow: hidden` seul ne tient pas — la page
+   continue de glisser derrière le menu. On fige le corps en position fixe et
+   site.js mémorise puis restitue la position exacte à la fermeture. */
+body.is-locked {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}
 
 /* --- Hero ---------------------------------------------------------------- */
 
