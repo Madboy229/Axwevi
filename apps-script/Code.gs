@@ -176,9 +176,17 @@ function list_() {
     var obj = {};
     headers.forEach(function (header, i) {
       var value = row[i];
-      obj[header] = (value instanceof Date)
-        ? Utilities.formatDate(value, tz, "yyyy-MM-dd'T'HH:mm:ss")
-        : value;
+
+      if (!(value instanceof Date)) {
+        obj[header] = value;
+        return;
+      }
+
+      // Une heure seule devient chez Sheets une date au 30/12/1899 : renvoyée
+      // telle quelle, elle s'afficherait « 1899- » côté tableau de bord.
+      if (header === 'Heure') obj[header] = Utilities.formatDate(value, tz, 'HH:mm');
+      else if (header === 'Date') obj[header] = Utilities.formatDate(value, tz, 'yyyy-MM-dd');
+      else obj[header] = Utilities.formatDate(value, tz, "yyyy-MM-dd'T'HH:mm:ss");
     });
     return obj;
   }).reverse();                                // la plus récente en premier
