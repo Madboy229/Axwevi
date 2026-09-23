@@ -1,0 +1,348 @@
+/* ==========================================================================
+   AXWEVI — Comportements de la page publique
+   Dépend de config.js (chargé avant).
+   ========================================================================== */
+
+(function () {
+  "use strict";
+
+  var CFG = window.AXWEVI_CONFIG || {};
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+  };
+
+  /* ---------------------------------------------------------------- Nav --- */
+
+  var nav = $("#nav");
+  var burger = $("#navBurger");
+  var navLinks = $("#navLinks");
+
+  if (nav) {
+    var setNavState = function () {
+      nav.classList.toggle("is-scrolled", window.scrollY > 40);
+    };
+    setNavState();
+    window.addEventListener("scroll", setNavState, { passive: true });
+  }
+
+  var closeMenu = function () {
+    if (!burger) return;
+    burger.setAttribute("aria-expanded", "false");
+    burger.setAttribute("aria-label", "Ouvrir le menu");
+    navLinks.classList.remove("is-open");
+    document.body.classList.remove("is-locked");
+  };
+
+  if (burger && navLinks) {
+    burger.addEventListener("click", function () {
+      var open = burger.getAttribute("aria-expanded") === "true";
+      if (open) {
+        closeMenu();
+      } else {
+        burger.setAttribute("aria-expanded", "true");
+        burger.setAttribute("aria-label", "Fermer le menu");
+        navLinks.classList.add("is-open");
+        document.body.classList.add("is-locked");
+      }
+    });
+
+    // Refermer dès qu'on navigue, ou sur Échap
+    navLinks.addEventListener("click", function (e) {
+      if (e.target.closest("a")) closeMenu();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeMenu();
+    });
+  }
+
+  /* ------------------------------------------- Lien actif au défilement --- */
+
+  var sections = $$("main section[id], header[id]");
+  var navAnchors = $$("#navLinks a");
+
+  if (sections.length && "IntersectionObserver" in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        navAnchors.forEach(function (a) {
+          var match = a.getAttribute("href") === "#" + entry.target.id;
+          if (match) a.setAttribute("aria-current", "true");
+          else a.removeAttribute("aria-current");
+        });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    sections.forEach(function (s) { spy.observe(s); });
+  }
+
+  /* -------------------------------------------- Révélation au scroll ----- */
+
+  var revealables = $$(".reveal");
+  if (revealables.length && "IntersectionObserver" in window) {
+    var revealer = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        obs.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -60px 0px", threshold: 0.1 });
+    revealables.forEach(function (el) { revealer.observe(el); });
+  } else {
+    revealables.forEach(function (el) { el.classList.add("is-visible"); });
+  }
+
+  /* --------------------------------------------- Onglets de la carte ----- */
+
+  var tabs = $$(".tab");
+
+  var selectTab = function (tab, focus) {
+    tabs.forEach(function (t) {
+      var selected = t === tab;
+      t.setAttribute("aria-selected", String(selected));
+      t.tabIndex = selected ? 0 : -1;
+      var panel = document.getElementById(t.getAttribute("aria-controls"));
+      if (panel) panel.hidden = !selected;
+    });
+    if (focus) tab.focus();
+  };
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener("click", function () { selectTab(tab, false); });
+
+    // Flèches, Début et Fin — comportement attendu d'un vrai jeu d'onglets
+    tab.addEventListener("keydown", function (e) {
+      var next = null;
+      if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+      else if (e.key === "ArrowLeft") next = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (e.key === "Home") next = tabs[0];
+      else if (e.key === "End") next = tabs[tabs.length - 1];
+      if (next) {
+        e.preventDefault();
+        selectTab(next, true);
+      }
+    });
+  });
+
+  /* ------------------------------- Sélecteur de plats bâti sur la carte --- */
+  /* La carte du menu est la seule source de vérité : les cases à cocher du
+     formulaire en sont dérivées, donc elles ne peuvent pas se désynchroniser. */
+
+  var picker = $("#dishPicker");
+
+  if (picker) {
+    $$(".menu-panel").forEach(function (panel) {
+      var dishes = $$(".dish:not([data-no-pick])", panel);
+      if (!dishes.length) return;
+
+      var group = document.createElement("div");
+      group.className = "dish-picker__group";
+
+      var cat = document.createElement("span");
+      cat.className = "dish-picker__cat";
+      cat.textContent = panel.dataset.category || "";
+      group.appendChild(cat);
+
+      dishes.forEach(function (dish) {
+        var name = $(".dish__name", dish);
+        if (!name) return;
+        var label = document.createElement("label");
+        label.className = "dish-picker__item";
+
+        var box = document.createElement("input");
+        box.type = "checkbox";
+        box.name = "fdishes";
+        box.value = name.textContent.trim();
+
+        label.appendChild(box);
+        label.appendChild(document.createTextNode(" " + name.textContent.trim()));
+        group.appendChild(label);
+      });
+
+      picker.appendChild(group);
+    });
+  }
+
+  /* ------------------------------------------------- Formulaire ---------- */
+
+  var form = $("#reserveForm");
+  var confirmBox = $("#confirmBox");
+  var submitBtn = $("#submitBtn");
+  var dateInput = $("#fdate");
+
+  var pad = function (n) { return String(n).padStart(2, "0"); };
+  var toISO = function (d) {
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  };
+
+  // Empêcher les dates passées et borner l'horizon de réservation
+  if (dateInput) {
+    var today = new Date();
+    dateInput.min = toISO(today);
+    var horizon = new Date(today.getTime());
+    horizon.setDate(horizon.getDate() + (CFG.MAX_DAYS_AHEAD || 120));
+    dateInput.max = toISO(horizon);
+  }
+
+  var setError = function (id, message) {
+    var field = document.getElementById(id);
+    var slot = document.getElementById("err-" + id);
+    if (field) field.setAttribute("aria-invalid", message ? "true" : "false");
+    if (slot) {
+      slot.textContent = message || "";
+      slot.classList.toggle("is-visible", Boolean(message));
+    }
+  };
+
+  var clearErrors = function () {
+    ["fname", "fphone", "fdate", "ftime", "fguests", "femail"].forEach(function (id) {
+      setError(id, "");
+    });
+  };
+
+  var showMessage = function (text, isError) {
+    if (!confirmBox) return;
+    confirmBox.textContent = text;
+    confirmBox.classList.toggle("is-error", Boolean(isError));
+    confirmBox.classList.add("is-visible");
+  };
+
+  var formatDate = function (iso) {
+    if (!iso) return "";
+    var d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString("fr-FR", {
+      weekday: "long", day: "numeric", month: "long", year: "numeric"
+    });
+  };
+
+  // Renvoie le premier champ en faute, ou null si tout est bon
+  var validate = function (data) {
+    clearErrors();
+    var firstBad = null;
+    var fail = function (id, msg) {
+      setError(id, msg);
+      if (!firstBad) firstBad = id;
+    };
+
+    if (!data.fname || data.fname.trim().length < 2) {
+      fail("fname", "Merci d'indiquer votre nom.");
+    }
+
+    // Au moins 8 chiffres, indicatif et séparateurs acceptés
+    var digits = (data.fphone || "").replace(/[^0-9]/g, "");
+    if (digits.length < 8) {
+      fail("fphone", "Numéro incomplet — nous en avons besoin pour confirmer.");
+    }
+
+    if (!data.fdate) {
+      fail("fdate", "Choisissez une date.");
+    } else {
+      var picked = new Date(data.fdate + "T00:00:00");
+      var midnight = new Date();
+      midnight.setHours(0, 0, 0, 0);
+
+      if (isNaN(picked.getTime())) {
+        fail("fdate", "Date invalide.");
+      } else if (picked < midnight) {
+        fail("fdate", "Cette date est déjà passée.");
+      } else if ((CFG.CLOSED_DAYS || []).indexOf(picked.getDay()) !== -1) {
+        fail("fdate", "Nous sommes fermés le dimanche. Choisissez un autre jour.");
+      }
+    }
+
+    if (!data.ftime) {
+      fail("ftime", "Choisissez une heure.");
+    } else if (data.ftime < (CFG.OPEN_TIME || "12:00") || data.ftime > (CFG.CLOSE_TIME || "22:00")) {
+      fail("ftime", "Le service est de " + (CFG.OPEN_TIME || "12:00") +
+                    " à " + (CFG.CLOSE_TIME || "22:00") + ".");
+    }
+
+    if (!data.fguests) {
+      fail("fguests", "Indiquez le nombre de personnes.");
+    }
+
+    if (data.femail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.femail)) {
+      fail("femail", "Cette adresse email semble incorrecte.");
+    }
+
+    return firstBad;
+  };
+
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var formData = new FormData(form);
+      var data = {};
+      formData.forEach(function (value, key) {
+        if (key !== "fdishes") data[key] = typeof value === "string" ? value.trim() : value;
+      });
+      data.fdishes = formData.getAll("fdishes").join(", ");
+
+      var bad = validate(data);
+      if (bad) {
+        showMessage("Quelques informations manquent ou sont à corriger — voir les champs signalés.", true);
+        var el = document.getElementById(bad);
+        if (el) el.focus();
+        return;
+      }
+
+      if (!CFG.SCRIPT_URL || CFG.SCRIPT_URL.indexOf("COLLE_ICI") !== -1) {
+        showMessage("Le site n'est pas encore relié au tableau de bord. Appelez-nous au " +
+                    CFG.PHONE_DISPLAY + " pour réserver.", true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Envoi en cours…";
+      confirmBox.classList.remove("is-visible");
+
+      // text/plain évite le pré-vol CORS, qu'Apps Script ne gère pas
+      fetch(CFG.SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data)
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (result) {
+          // On ne confirme que si le serveur a vraiment enregistré la demande
+          if (!result || result.ok !== true) {
+            throw new Error((result && result.error) || "refus du serveur");
+          }
+          var dishes = data.fdishes ? " Plats souhaités : " + data.fdishes + "." : "";
+          var vip = data.fvip === "VIP"
+            ? " Votre souhait d'espace VIP est noté, nous confirmerons sa disponibilité."
+            : "";
+          showMessage(
+            "Merci " + data.fname.split(" ")[0] + ", votre demande pour le " +
+            formatDate(data.fdate) + " à " + data.ftime + " (" + data.fguests +
+            " personne(s)) a bien été transmise à l'équipe Axwevi." + dishes + vip +
+            " Vous recevrez une confirmation sous 24h.",
+            false
+          );
+          form.reset();
+          clearErrors();
+        })
+        .catch(function () {
+          showMessage(
+            "Votre demande n'a pas pu être envoyée. Merci de réessayer, ou de nous appeler au " +
+            CFG.PHONE_DISPLAY + " — nous prenons la réservation directement.",
+            true
+          );
+        })
+        .finally(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Envoyer la demande";
+        });
+    });
+
+    // Effacer l'erreur d'un champ dès qu'on le corrige
+    form.addEventListener("input", function (e) {
+      if (e.target.id) setError(e.target.id, "");
+    });
+  }
+
+  /* ------------------------------------------------------- Pied de page -- */
+
+  var year = $("#year");
+  if (year) year.textContent = new Date().getFullYear();
+})();

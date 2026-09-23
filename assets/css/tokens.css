@@ -1,0 +1,242 @@
+/* ==========================================================================
+   AXWEVI — Design tokens, reset et primitives partagées
+   Utilisé par site.css et admin.css. Modifier une couleur ici la change partout.
+   ========================================================================== */
+
+:root {
+  /* --- Palette ---------------------------------------------------------- */
+  --terracotta-900: #7d3315;
+  --terracotta-700: #a5471f;
+  --terracotta-500: #c2652e;
+  --terracotta-300: #dd8a53;
+
+  --cream-50:  #fbf6ee;
+  --cream-100: #f4ead9;
+  --cream-200: #efe2cb;
+
+  --ink-900: #2a1c14;
+  --ink-600: #5a4536;
+  --ink-400: #8a7263;
+
+  --gold: #b8894f;
+
+  --ok:   #3f7d4e;
+  --warn: #b1862c;
+  --err:  #a5471f;
+
+  --line: rgba(42, 28, 20, 0.14);
+  --line-strong: rgba(42, 28, 20, 0.26);
+
+  /* --- Typographie ------------------------------------------------------ */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-script: 'Cormorant Garamond', Georgia, serif;
+
+  /* Échelle fluide : se règle seule entre mobile et desktop */
+  --step--1: clamp(0.82rem, 0.79rem + 0.15vw, 0.9rem);
+  --step-0:  clamp(1rem, 0.96rem + 0.2vw, 1.09rem);
+  --step-1:  clamp(1.2rem, 1.12rem + 0.4vw, 1.45rem);
+  --step-2:  clamp(1.45rem, 1.3rem + 0.75vw, 1.95rem);
+  --step-3:  clamp(1.8rem, 1.5rem + 1.5vw, 2.7rem);
+  --step-4:  clamp(2.4rem, 1.7rem + 3.4vw, 4.6rem);
+
+  /* --- Espacement et formes --------------------------------------------- */
+  --wrap: 1180px;
+  --gutter: clamp(20px, 5vw, 48px);
+  --section-y: clamp(64px, 9vw, 130px);
+
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+
+  --shadow-sm: 0 4px 14px -8px rgba(42, 20, 10, 0.4);
+  --shadow-md: 0 20px 50px -25px rgba(42, 20, 10, 0.45);
+  --shadow-lg: 0 40px 90px -45px rgba(42, 20, 10, 0.55);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 0.45s;
+}
+
+/* --- Reset --------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  /* Décale les ancres pour qu'un titre ne passe pas sous la nav fixe */
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.7;
+  color: var(--ink-600);
+  background: var(--cream-50);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--ink-900);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+p { margin: 0 0 1.1em; }
+p:last-child { margin-bottom: 0; }
+
+img, svg { display: block; max-width: 100%; }
+
+a { color: inherit; }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; }
+
+/* --- Accessibilité ------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--terracotta-500);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translate(-50%, -150%);
+  z-index: 200;
+  background: var(--ink-900);
+  color: var(--cream-50);
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: transform 0.2s var(--ease);
+}
+.skip-link:focus { transform: translate(-50%, 0); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Primitives ---------------------------------------------------------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--terracotta-500);
+  margin: 0;
+}
+
+.script {
+  font-family: var(--font-script);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.section-head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto clamp(40px, 6vw, 70px);
+}
+.section-head h2 {
+  font-size: var(--step-3);
+  margin-top: 14px;
+}
+.section-head p { margin-top: 18px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 34px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), transform 0.2s var(--ease);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn[disabled] { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn--solid {
+  background: var(--terracotta-700);
+  color: var(--cream-50);
+}
+.btn--solid:hover { background: var(--terracotta-900); }
+
+.btn--ghost {
+  border-color: currentColor;
+  color: var(--ink-900);
+}
+.btn--ghost:hover { background: var(--ink-900); color: var(--cream-50); }
+
+.btn--dark {
+  background: var(--ink-900);
+  color: var(--cream-50);
+  width: 100%;
+}
+.btn--dark:hover { background: #3d291d; }
+
+/* --- Motif décoratif ----------------------------------------------------- */
+
+.motif {
+  height: 28px;
+  background-image:
+    radial-gradient(circle at 50% 120%, var(--terracotta-300) 0 6px, transparent 6px);
+  background-size: 34px 28px;
+  background-repeat: repeat-x;
+  opacity: 0.4;
+}
+
+/* --- Révélation au défilement -------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}

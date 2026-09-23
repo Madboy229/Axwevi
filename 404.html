@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page introuvable — Axwevi</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#a5471f">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23a5471f'/><text x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='700' fill='%23f4ead9' text-anchor='middle'>A</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Cormorant+Garamond:ital,wght@1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<style>
+  .lost {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100svh;
+    padding: var(--gutter);
+    text-align: center;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(221, 138, 83, 0.22), transparent 70%),
+      linear-gradient(180deg, var(--cream-100), var(--cream-50));
+  }
+  .lost__mark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--terracotta-700);
+  }
+  .lost h1 {
+    font-size: var(--step-4);
+    margin: 20px 0 0;
+  }
+  .lost__rule {
+    width: 72px;
+    height: 1px;
+    background: var(--gold);
+    margin: 26px 0;
+  }
+  .lost p {
+    max-width: 440px;
+    margin-bottom: 36px;
+  }
+</style>
+</head>
+<body>
+  <main class="lost">
+    <div class="lost__mark">AXWEVI</div>
+    <h1>404</h1>
+    <div class="lost__rule"></div>
+    <p class="script" style="font-size:var(--step-2);color:var(--terracotta-700);margin-bottom:18px;">
+      Cette page a quitté la table
+    </p>
+    <p>La page que vous cherchez n'existe pas ou a été déplacée. Le reste de la
+      maison vous attend.</p>
+    <a class="btn btn--solid" href="/Axwevi/">Retour à l'accueil</a>
+  </main>
+</body>
+</html>

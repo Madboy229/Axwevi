@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Page interne : ni indexée, ni liée depuis le site public. -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="referrer" content="no-referrer">
+
+<title>Espace équipe — Axwevi</title>
+<meta name="theme-color" content="#2a1c14">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232a1c14'/><text x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='700' fill='%23dd8a53' text-anchor='middle'>A</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<!-- ====================== CONNEXION ====================== -->
+<div class="gate" id="gate">
+  <form class="gate__card" id="gateForm" autocomplete="off">
+    <div class="gate__mark">AXWEVI</div>
+    <h1>Espace équipe</h1>
+    <p>Tableau de bord des réservations</p>
+
+    <label class="visually-hidden" for="keyInput">Clé d'accès</label>
+    <input type="password" id="keyInput" name="axwevi-access-key"
+           placeholder="Clé d'accès" autocomplete="current-password" spellcheck="false">
+
+    <button class="btn btn--dark" id="unlockBtn" type="submit">Accéder au tableau de bord</button>
+    <p class="gate__error" id="gateError" role="alert"></p>
+  </form>
+</div>
+
+<!-- ====================== TABLEAU DE BORD ====================== -->
+<div class="dash" id="dash" hidden>
+  <div class="dash__inner">
+
+    <div class="dash__top">
+      <div>
+        <h1>Réservations</h1>
+        <span class="dash__count" id="countLabel">—</span>
+      </div>
+      <div class="dash__actions">
+        <button class="chip" id="refreshBtn" type="button">Actualiser</button>
+        <button class="chip" id="logoutBtn" type="button">Se déconnecter</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat__value" id="statTotal">0</div>
+        <div class="stat__label">Total</div>
+      </div>
+      <div class="stat">
+        <div class="stat__value" id="statAttente">0</div>
+        <div class="stat__label">En attente</div>
+      </div>
+      <div class="stat">
+        <div class="stat__value" id="statConfirmee">0</div>
+        <div class="stat__label">Confirmées</div>
+      </div>
+      <div class="stat stat--vip">
+        <div class="stat__value" id="statVip">0</div>
+        <div class="stat__label">Espace VIP</div>
+      </div>
+    </div>
+
+    <section class="vip-panel" aria-labelledby="vipPanelTitle">
+      <div class="vip-panel__head">
+        <div>
+          <h2 id="vipPanelTitle">Salons VIP</h2>
+          <p class="vip-panel__hint">Deux salons privatifs, réservables séparément au déjeuner et au dîner.</p>
+        </div>
+        <div class="vip-panel__date">
+          <label for="vipDate">Journée</label>
+          <input type="date" id="vipDate">
+        </div>
+      </div>
+      <div id="vipBoard" aria-live="polite"></div>
+    </section>
+
+    <div class="toolbar">
+      <button class="chip" data-filter="all" type="button" aria-pressed="true">Toutes</button>
+      <button class="chip" data-filter="En attente" type="button" aria-pressed="false">En attente</button>
+      <button class="chip" data-filter="Confirmée" type="button" aria-pressed="false">Confirmées</button>
+      <button class="chip" data-filter="Refusée" type="button" aria-pressed="false">Refusées</button>
+      <button class="chip" data-filter="VIP" type="button" aria-pressed="false">VIP</button>
+
+      <label class="visually-hidden" for="searchInput">Rechercher une réservation</label>
+      <input class="toolbar__search" id="searchInput" type="search"
+             placeholder="Rechercher un nom, un numéro…">
+    </div>
+
+    <div id="listArea" aria-live="polite"></div>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
