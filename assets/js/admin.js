@@ -274,8 +274,8 @@
 
   /** « 19:30 » devient « 19h30 ». */
   var formatHour = function (value) {
-    var text = String(value || "").slice(0, 5);
-    return /^\d{2}:\d{2}$/.test(text) ? text.replace(":", "h") : (text || "—");
+    var t = timeOf(value);
+    return t ? t.replace(":", "h") : "—";
   };
 
   var formatDate = function (value) {
@@ -289,6 +289,20 @@
 
   var ROOMS = CFG.VIP_ROOMS || ["Salon VIP 1", "Salon VIP 2"];
   var SERVICES = CFG.SERVICES || [];
+
+  /**
+   * Ramène une heure à « HH:MM », d'où qu'elle vienne.
+   *
+   * Google Sheets ne sait pas stocker une heure seule : il en fait une date
+   * au 30 décembre 1899, et la feuille renvoie alors « 1899-12-30T19:30:00 »
+   * là où on attendait « 19:30 ». On extrait donc la première heure trouvée
+   * dans la chaîne, quelle que soit sa forme.
+   */
+  var timeOf = function (value) {
+    var match = String(value == null ? "" : value).match(/(\d{1,2}):(\d{2})/);
+    if (!match) return "";
+    return String(match[1]).padStart(2, "0") + ":" + match[2];
+  };
 
   /** Ramène une date, texte brut ou ISO, à une clé « AAAA-MM-JJ ». */
   var dateKey = function (value) {
@@ -305,7 +319,8 @@
 
   /** À quel service appartient une heure « HH:MM ». */
   var serviceOf = function (time) {
-    var t = String(time || "").slice(0, 5);
+    var t = timeOf(time);
+    if (!t) return null;
     for (var i = 0; i < SERVICES.length; i++) {
       if (t >= SERVICES[i].from && t <= SERVICES[i].to) return SERVICES[i];
     }
@@ -628,8 +643,8 @@
 
   /** Ordre de service : par date, puis par heure. */
   var byDateTime = function (a, b) {
-    var ka = dateKey(a.Date) + " " + String(a.Heure || "");
-    var kb = dateKey(b.Date) + " " + String(b.Heure || "");
+    var ka = dateKey(a.Date) + " " + timeOf(a.Heure);
+    var kb = dateKey(b.Date) + " " + timeOf(b.Heure);
     return ka < kb ? -1 : (ka > kb ? 1 : 0);
   };
 
