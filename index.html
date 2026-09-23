@@ -481,14 +481,29 @@
                 <p class="field__error" id="err-fname"></p>
               </div>
               <div class="field">
+                <label for="femail">Email (optionnel)</label>
+                <input type="email" id="femail" name="femail" placeholder="vous@email.com"
+                       autocomplete="email" aria-describedby="err-femail">
+                <p class="field__error" id="err-femail"></p>
+              </div>
+            </div>
+
+            <div class="form-row form-row--phone">
+              <div class="field">
                 <label for="fphone">Téléphone *</label>
-                <input type="tel" id="fphone" name="fphone" placeholder="+229 ..."
-                       autocomplete="tel" required aria-describedby="err-fphone">
+                <div class="phone">
+                  <!-- Indicatifs remplis par site.js, Bénin en premier -->
+                  <label class="visually-hidden" for="fdial">Indicatif du pays</label>
+                  <select class="phone__dial" id="fdial" name="fdial"></select>
+                  <input type="tel" id="fphone" name="fphone" placeholder="01 61 54 41 99"
+                         autocomplete="tel-national" inputmode="tel"
+                         required aria-describedby="err-fphone">
+                </div>
                 <p class="field__error" id="err-fphone"></p>
               </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row form-row--three">
               <div class="field">
                 <label for="fdate">Date *</label>
                 <input type="date" id="fdate" name="fdate" required aria-describedby="err-fdate">
@@ -503,23 +518,14 @@
                 </select>
                 <p class="field__error" id="err-ftime"></p>
               </div>
-            </div>
-
-            <div class="form-row">
               <div class="field">
-                <label for="fguests">Nombre de personnes *</label>
+                <label for="fguests">Personnes *</label>
                 <select id="fguests" name="fguests" required aria-describedby="err-fguests">
                   <option value="">Choisir</option>
                   <option>1</option><option>2</option><option>3</option><option>4</option>
                   <option>5</option><option>6</option><option>7</option><option>8+</option>
                 </select>
                 <p class="field__error" id="err-fguests"></p>
-              </div>
-              <div class="field">
-                <label for="femail">Email (optionnel)</label>
-                <input type="email" id="femail" name="femail" placeholder="vous@email.com"
-                       autocomplete="email" aria-describedby="err-femail">
-                <p class="field__error" id="err-femail"></p>
               </div>
             </div>
 

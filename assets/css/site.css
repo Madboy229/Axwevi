@@ -624,6 +624,34 @@ body.is-locked { overflow: hidden; }
 }
 .field__error.is-visible { display: block; }
 
+/* Téléphone : indicatif à gauche, numéro local à droite */
+.phone {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 8px;
+}
+.phone__dial {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 9px;
+  font-size: var(--step--1);
+}
+
+/* Le téléphone occupe toute la largeur du formulaire : l'indicatif et le
+   numéro ne tiennent pas côte à côte dans une demi-colonne. */
+.form-row--phone { grid-template-columns: 1fr; }
+/* Les minimums évitent que « Personnes » passe à la ligne sous son champ */
+.form-row--three {
+  grid-template-columns: minmax(130px, 1.2fr) minmax(100px, 1fr) minmax(132px, 1fr);
+}
+
+@media (max-width: 760px) {
+  .form-row--three { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .form-row--three { grid-template-columns: 1fr; }
+}
+
 /* Choix salle / VIP */
 .choice {
   display: grid;

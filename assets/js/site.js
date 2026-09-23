@@ -289,6 +289,35 @@
     dateInput.max = toISO(horizon);
   }
 
+  /* ------------------------------------------- Indicatif téléphonique ---- */
+
+  var dialSelect = $("#fdial");
+  var phoneInput = $("#fphone");
+  var DIALS = CFG.DIAL_CODES || [];
+
+  var selectedDial = function () {
+    if (!dialSelect) return DIALS[0] || { code: "+229" };
+    var i = dialSelect.selectedIndex;
+    return DIALS[i] || DIALS[0] || { code: "+229" };
+  };
+
+  if (dialSelect && DIALS.length) {
+    DIALS.forEach(function (entry) {
+      var option = document.createElement("option");
+      option.value = entry.code;
+      option.textContent = entry.code + " " + entry.pays;
+      dialSelect.appendChild(option);
+    });
+    dialSelect.selectedIndex = 0;              // Bénin par défaut
+
+    // L'exemple affiché suit le pays choisi
+    dialSelect.addEventListener("change", function () {
+      var entry = selectedDial();
+      if (phoneInput) phoneInput.placeholder = entry.exemple || "";
+      setError("fphone", "");
+    });
+  }
+
   /* --------------------------------------------- Créneaux de service ----- */
 
   var timeSelect = $("#ftime");
@@ -393,10 +422,18 @@
       fail("fname", "Merci d'indiquer votre nom.");
     }
 
-    // Au moins 8 chiffres, indicatif et séparateurs acceptés
+    // La partie locale seule : l'indicatif vient du menu déroulant.
+    // Les espaces, points et tirets sont acceptés, seuls les chiffres comptent.
+    var entry = selectedDial();
     var digits = (data.fphone || "").replace(/[^0-9]/g, "");
-    if (digits.length < 8) {
-      fail("fphone", "Numéro incomplet — nous en avons besoin pour confirmer.");
+
+    if (!digits) {
+      fail("fphone", "Merci d'indiquer votre numéro, il nous sert à confirmer.");
+    } else if (entry.digits && digits.length !== entry.digits) {
+      fail("fphone", "Un numéro " + (entry.pays || "") + " compte " + entry.digits +
+        " chiffres — par exemple " + (entry.exemple || "") + ".");
+    } else if (!entry.digits && (digits.length < 6 || digits.length > 15)) {
+      fail("fphone", "Ce numéro ne semble pas complet.");
     }
 
     if (!data.fdate) {
@@ -451,6 +488,10 @@
         if (el) el.focus();
         return;
       }
+
+      // Numéro complet pour l'équipe : indicatif choisi + partie locale
+      data.fphone = selectedDial().code + " " + data.fphone;
+      delete data.fdial;
 
       if (!CFG.SCRIPT_URL || CFG.SCRIPT_URL.indexOf("COLLE_ICI") !== -1) {
         showMessage("Le site n'est pas encore relié au tableau de bord. Appelez-nous au " +
