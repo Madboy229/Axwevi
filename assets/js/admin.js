@@ -272,6 +272,12 @@
     return "badge--attente";
   };
 
+  /** « 19:30 » devient « 19h30 ». */
+  var formatHour = function (value) {
+    var text = String(value || "").slice(0, 5);
+    return /^\d{2}:\d{2}$/.test(text) ? text.replace(":", "h") : (text || "—");
+  };
+
   var formatDate = function (value) {
     if (!value) return "—";
     var d = new Date(value);
@@ -395,7 +401,7 @@
         value.className = "vip-room__state";
         if (booking) {
           value.textContent = (booking.Nom || "Réservé") + " · " +
-            (booking.Heure || "") + " · " + (booking.Personnes || "?") + " pers.";
+            formatHour(booking.Heure) + " · " + (booking.Personnes || "?") + " pers.";
         } else {
           value.textContent = "Libre";
         }
@@ -421,7 +427,7 @@
         wait.textContent = bucket.pending.length + " demande" +
           (bucket.pending.length > 1 ? "s" : "") + " VIP en attente : " +
           bucket.pending.map(function (it) {
-            return (it.Nom || "?") + " (" + (it.Heure || "?") + ")";
+            return (it.Nom || "?") + " (" + formatHour(it.Heure) + ")";
           }).join(", ");
         block.appendChild(wait);
       }
@@ -504,7 +510,7 @@
     var grid = document.createElement("dl");
     grid.className = "card__grid";
     grid.appendChild(defItem("Date", formatDate(item.Date)));
-    grid.appendChild(defItem("Heure", item.Heure || "—"));
+    grid.appendChild(defItem("Heure d'arrivée", formatHour(item.Heure)));
     grid.appendChild(defItem("Personnes", item.Personnes || "—"));
     grid.appendChild(defItem("Table", isVip ? "Espace VIP" : "Salle"));
 
@@ -518,7 +524,8 @@
     if (item.Plats) {
       grid.appendChild(defItem("Plats souhaités", item.Plats));
     }
-    grid.appendChild(defItem("Reçue le", formatDate(item.Horodatage)));
+    // L'horodatage d'envoi reste dans le Google Sheet, mais n'encombre pas la
+    // fiche : seule l'heure d'arrivée sert à préparer le service.
     card.appendChild(grid);
 
     // Message libre du client
