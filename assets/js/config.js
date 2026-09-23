@@ -33,6 +33,6 @@ window.AXWEVI_CONFIG = {
   // n'empêche pas une table le soir. La disponibilité se compte par service.
   SERVICES: [
     { id: "midi", label: "Déjeuner", from: "12:00", to: "16:59" },
-    { id: "soir", label: "Dîner", from: "17:00", to: "23:59" }
+    { id: "soir", label: "Dîner", from: "17:00", to: "22:00" }
   ]
 };
