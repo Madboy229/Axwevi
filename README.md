@@ -97,6 +97,21 @@ dans le tableau de bord sous la forme `2 × Agneau Royal, 1 × Monyo`.
 Une demande VIP est signalée dans le tableau de bord par un badge doré, un
 liseré sur la fiche, un compteur dédié et un filtre.
 
+## Vues du tableau de bord
+
+Le tableau de bord s'ouvre sur **les réservations du jour** — la vue de travail
+du service. Deux rangées de filtres se combinent :
+
+- **Période** : Aujourd'hui, Demain, 7 jours, Ce mois, Tout l'historique, plus
+  un sélecteur de mois pour remonter aux mois écoulés
+- **Statut** : Toutes, En attente, Confirmées, Refusées, VIP
+
+Les compteurs en haut portent sur la période affichée, pas sur l'historique
+entier. Les fiches sont triées par date puis par heure, dans l'ordre du service.
+
+Le panneau des salons VIP garde son propre sélecteur de date, indépendant de
+ces filtres.
+
 La demande n'est déclarée transmise que si le serveur confirme l'avoir
 enregistrée. En cas d'échec, le visiteur reçoit le numéro de téléphone du
 restaurant.

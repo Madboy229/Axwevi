@@ -45,6 +45,7 @@
     <div class="dash__top">
       <div>
         <h1>Réservations</h1>
+        <span class="dash__period" id="periodLabel">—</span>
         <span class="dash__count" id="countLabel">—</span>
       </div>
       <div class="dash__actions">
@@ -86,7 +87,22 @@
       <div id="vipBoard" aria-live="polite"></div>
     </section>
 
+    <div class="toolbar toolbar--period">
+      <span class="toolbar__label">Période</span>
+      <button class="chip" data-period="today" type="button" aria-pressed="true">Aujourd'hui</button>
+      <button class="chip" data-period="tomorrow" type="button" aria-pressed="false">Demain</button>
+      <button class="chip" data-period="week" type="button" aria-pressed="false">7 jours</button>
+      <button class="chip" data-period="month" type="button" aria-pressed="false">Ce mois</button>
+      <button class="chip" data-period="all" type="button" aria-pressed="false">Tout l'historique</button>
+
+      <label class="toolbar__month">
+        <span>Un mois précis</span>
+        <input type="month" id="monthInput">
+      </label>
+    </div>
+
     <div class="toolbar">
+      <span class="toolbar__label">Statut</span>
       <button class="chip" data-filter="all" type="button" aria-pressed="true">Toutes</button>
       <button class="chip" data-filter="En attente" type="button" aria-pressed="false">En attente</button>
       <button class="chip" data-filter="Confirmée" type="button" aria-pressed="false">Confirmées</button>
