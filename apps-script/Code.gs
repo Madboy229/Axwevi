@@ -18,12 +18,13 @@ var ADMIN_KEY = 'CHANGE_MOI_CLE_SECRETE';
 // Email prévenu à chaque nouvelle demande. Laisser '' pour désactiver.
 var NOTIFY_EMAIL = '';
 
-// « VIP » est ajouté en dernier, et non à sa place logique, pour que les
-// réservations déjà enregistrées gardent leurs colonnes intactes.
+// L'ordre reprend exactement celui de la feuille existante ; « Plats » et
+// « VIP » sont ajoutés à la fin. Les insérer à leur place logique décalerait
+// toutes les réservations déjà enregistrées d'une colonne.
 var HEADERS = ['ID', 'Horodatage', 'Nom', 'Telephone', 'Email', 'Date',
-               'Heure', 'Personnes', 'Plats', 'Message', 'Statut', 'VIP'];
+               'Heure', 'Personnes', 'Message', 'Statut', 'Plats', 'VIP'];
 
-var STATUS_COLUMN = 11;                       // colonne « Statut »
+var STATUS_COLUMN = 10;                       // colonne « Statut »
 var ALLOWED_STATUS = ['En attente', 'Confirmée', 'Refusée'];
 var MAX_LEN = 700;                            // garde-fou sur les champs libres
 
@@ -103,9 +104,9 @@ function doPost(e) {
       clean_(data.fdate),
       clean_(data.ftime),
       clean_(data.fguests),
-      clean_(data.fdishes),
       clean_(data.fmessage),
       'En attente',
+      clean_(data.fdishes),
       data.fvip === 'VIP' ? 'VIP' : 'Salle'
     ]);
 
