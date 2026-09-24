@@ -10,7 +10,7 @@
    ========================================================================== */
 
 window.AXWEVI_CONFIG = {
-  SCRIPT_URL: "https://script.google.com/macros/s/AKfycby5oYg4xkYdJLs9B1HAzrvhHxOHPokrTwCV3WCC5aXczg6JSSJjLTyMAcFgGKeoytkxpw/exec",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbw7nwapRPWeOKQlTnRBsaePpoJAYYt9zpg4NpSHkdqWnfsofSsqe0armrfSO2QGld17kQ/exec",
 
   // Coordonnées reprises dans les messages d'erreur du formulaire
   PHONE_DISPLAY: "+229 01 61 54 41 99",
