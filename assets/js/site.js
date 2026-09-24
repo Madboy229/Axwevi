@@ -515,14 +515,16 @@
   };
 
   /**
-   * Google Sheets lit toute valeur commençant par = + - @ comme une formule.
-   * « +229 01 61 54 41 99 » n'en étant pas une, la feuille écrit #ERROR! à la
-   * place et le numéro est perdu. L'apostrophe initiale force l'enregistrement
-   * en texte ; elle n'apparaît pas dans la cellule.
+   * Google Sheets lit toute valeur commençant par = + - @ comme une formule,
+   * et écrit #ERROR! quand elle n'en est pas une valide.
+   *
+   * L'apostrophe qui protège une saisie au clavier n'est pas interprétée quand
+   * la valeur arrive par script : elle serait stockée telle quelle. Une espace
+   * initiale, elle, suffit toujours à empêcher l'évaluation, et ne se voit pas.
    */
   var sheetSafe = function (value) {
     var text = String(value == null ? "" : value);
-    return /^[=+\-@]/.test(text) ? "'" + text : text;
+    return /^[=+\-@]/.test(text) ? " " + text : text;
   };
 
   var formatDate = function (iso) {
@@ -620,11 +622,16 @@
           typed.replace(/[^0-9]/g, "").length > (dial.max || 15)) {
         typed = typed.replace("0", "").trim();
       }
-      data.fphone = dial.code + " " + typed.replace(/\s+/g, " ");
+      // L'indicatif part en notation 00 plutôt qu'en +. Un numéro qui commence
+      // par un chiffre ne peut jamais être pris pour une formule, quelle que
+      // soit la version du script installée. Le tableau de bord le réaffiche
+      // avec son + et le rend composable.
+      data.fphone = dial.code.replace("+", "00") + " " + typed.replace(/\s+/g, " ");
       delete data.fdial;
 
-      // Protection des champs libres contre l'interprétation en formule
-      ["fname", "fphone", "femail", "fmessage", "fdishes"].forEach(function (key) {
+      // Même protection pour les champs libres, où le client peut commencer
+      // son texte par un tiret ou une arobase
+      ["fname", "femail", "fmessage", "fdishes"].forEach(function (key) {
         data[key] = sheetSafe(data[key]);
       });
 

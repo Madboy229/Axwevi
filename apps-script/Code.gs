@@ -58,12 +58,16 @@ function jsonOut_(obj) {
 
 /**
  * Nettoie une valeur reçue du formulaire avant de l'écrire dans la feuille.
- * Un texte commençant par = + - @ serait interprété comme une formule par
- * Google Sheets : on le préfixe d'une apostrophe pour le neutraliser.
+ *
+ * Un texte commençant par = + - @ serait évalué comme une formule par Google
+ * Sheets, qui écrit #ERROR! quand elle n'en est pas une valide : le contenu
+ * est alors perdu. L'apostrophe qui protège une saisie au clavier n'est pas
+ * interprétée lors d'une écriture par script ; une espace initiale, si, et
+ * elle ne se voit pas dans la cellule.
  */
 function clean_(value) {
   var text = String(value == null ? '' : value).slice(0, MAX_LEN).trim();
-  if (/^[=+\-@]/.test(text)) text = "'" + text;
+  if (/^[=+\-@]/.test(text)) text = ' ' + text;
   return text;
 }
 
