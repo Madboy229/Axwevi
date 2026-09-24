@@ -514,6 +514,17 @@
     confirmBox.classList.add("is-visible");
   };
 
+  /**
+   * Google Sheets lit toute valeur commençant par = + - @ comme une formule.
+   * « +229 01 61 54 41 99 » n'en étant pas une, la feuille écrit #ERROR! à la
+   * place et le numéro est perdu. L'apostrophe initiale force l'enregistrement
+   * en texte ; elle n'apparaît pas dans la cellule.
+   */
+  var sheetSafe = function (value) {
+    var text = String(value == null ? "" : value);
+    return /^[=+\-@]/.test(text) ? "'" + text : text;
+  };
+
   var formatDate = function (iso) {
     if (!iso) return "";
     var d = new Date(iso + "T00:00:00");
@@ -611,6 +622,11 @@
       }
       data.fphone = dial.code + " " + typed.replace(/\s+/g, " ");
       delete data.fdial;
+
+      // Protection des champs libres contre l'interprétation en formule
+      ["fname", "fphone", "femail", "fmessage", "fdishes"].forEach(function (key) {
+        data[key] = sheetSafe(data[key]);
+      });
 
       if (!CFG.SCRIPT_URL || CFG.SCRIPT_URL.indexOf("COLLE_ICI") !== -1) {
         showMessage("Le site n'est pas encore relié au tableau de bord. Appelez-nous au " +
