@@ -34,6 +34,31 @@
 
   var STATUSES = ["En attente", "Confirmée", "Refusée"];
 
+  /**
+   * Nettoie une réservation telle que la feuille la renvoie.
+   *
+   * Une valeur commençant par + ou = est enregistrée précédée d'une
+   * apostrophe, qui force Google Sheets à la garder en texte. Selon la
+   * version du script, cette apostrophe peut ressortir : on la retire ici.
+   */
+  var cleanItem = function (item) {
+    var out = {};
+    Object.keys(item || {}).forEach(function (key) {
+      var value = item[key];
+      out[key] = (typeof value === "string") ? value.replace(/^'/, "") : value;
+    });
+    return out;
+  };
+
+  var cleanItems = function (list) {
+    return (list || []).map(cleanItem);
+  };
+
+  /** Un numero exploitable porte au moins six chiffres. */
+  var usablePhone = function (value) {
+    return String(value == null ? "" : value).replace(/[^0-9]/g, "").length >= 6;
+  };
+
   var state = {
     key: "",
     items: [],
@@ -80,7 +105,7 @@
         if (!res || res.ok !== true) {
           throw new Error((res && res.error) || "Clé refusée");
         }
-        state.items = res.items || [];
+        state.items = cleanItems(res.items);
         try { sessionStorage.setItem(KEY_STORE, key); } catch (e) { /* onglet privé */ }
         openDash();
       })
@@ -150,7 +175,7 @@
         if (!res || res.ok !== true) {
           throw new Error((res && res.error) || "Réponse inattendue");
         }
-        state.items = res.items || [];
+        state.items = cleanItems(res.items);
         render();
       })
       .catch(function () {
@@ -523,16 +548,24 @@
 
     // Le téléphone sort de la grille : c'est le champ le plus utilisé, il doit
     // se lire sans chercher et se composer d'un seul geste.
+    var callable = usablePhone(item.Telephone);
+
     if (item.Telephone || item.Email) {
       var contact = document.createElement("div");
       contact.className = "card__contact";
 
-      if (item.Telephone) {
+      if (callable) {
         var phone = document.createElement("a");
         phone.className = "card__phone";
         phone.href = "tel:" + String(item.Telephone).replace(/[^0-9+]/g, "");
         phone.textContent = item.Telephone;
         contact.appendChild(phone);
+      } else if (item.Telephone) {
+        // Numéro abîmé à l'écriture : le dire plutôt que d'offrir un lien mort
+        var broken = document.createElement("span");
+        broken.className = "card__phone card__phone--broken";
+        broken.textContent = "Numéro illisible — voir le tableur";
+        contact.appendChild(broken);
       }
 
       if (item.Email) {
@@ -583,7 +616,7 @@
     if (status !== "Refusée") {
       actions.appendChild(actionButton("Refuser", "btn-sm btn-refuse", item.ID, "Refusée"));
     }
-    if (item.Telephone) {
+    if (callable) {
       var callLink = document.createElement("a");
       callLink.className = "btn-sm btn-call";
       callLink.href = "tel:" + String(item.Telephone).replace(/[^0-9+]/g, "");
