@@ -45,9 +45,20 @@
     var out = {};
     Object.keys(item || {}).forEach(function (key) {
       var value = item[key];
-      out[key] = (typeof value === "string") ? value.replace(/^'/, "") : value;
+      out[key] = (typeof value === "string") ? value.replace(/^'/, "").trim() : value;
     });
     return out;
+  };
+
+  /** « 00229 0142095946 » se lit « +229 0142095946 ». */
+  var prettyPhone = function (value) {
+    return String(value == null ? "" : value).trim().replace(/^00/, "+");
+  };
+
+  /** Lien composable, toujours en notation internationale. */
+  var telHref = function (value) {
+    var digits = String(value == null ? "" : value).replace(/[^0-9]/g, "");
+    return "tel:+" + digits.replace(/^00/, "");
   };
 
   var cleanItems = function (list) {
@@ -557,8 +568,8 @@
       if (callable) {
         var phone = document.createElement("a");
         phone.className = "card__phone";
-        phone.href = "tel:" + String(item.Telephone).replace(/[^0-9+]/g, "");
-        phone.textContent = item.Telephone;
+        phone.href = telHref(item.Telephone);
+        phone.textContent = prettyPhone(item.Telephone);
         contact.appendChild(phone);
       } else if (item.Telephone) {
         // Numéro abîmé à l'écriture : le dire plutôt que d'offrir un lien mort
@@ -619,7 +630,7 @@
     if (callable) {
       var callLink = document.createElement("a");
       callLink.className = "btn-sm btn-call";
-      callLink.href = "tel:" + String(item.Telephone).replace(/[^0-9+]/g, "");
+      callLink.href = telHref(item.Telephone);
       callLink.textContent = "Appeler";
       actions.appendChild(callLink);
     }
