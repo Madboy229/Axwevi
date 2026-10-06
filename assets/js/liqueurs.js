@@ -442,7 +442,8 @@
           showMessage(
             "Merci " + data.cname.trim().split(" ")[0] + ", votre commande de " +
             resume() + " (" + fcfa(totalFcfa()) + ") est enregistrée. " +
-            "Nous vous rappelons sous 24h au " + data.cphone +
+            "Nous vous rappelons sous 24h au " +
+            data.cphone.replace(/^00/, "+") +
             " pour convenir du règlement et de la remise.",
             false
           );
