@@ -28,6 +28,22 @@ var STATUS_COLUMN = 10;                       // colonne « Statut »
 var ALLOWED_STATUS = ['En attente', 'Confirmée', 'Refusée'];
 var MAX_LEN = 700;                            // garde-fou sur les champs libres
 
+// --- Les commandes de liqueurs ---------------------------------------------
+// Feuille séparée : une commande et une réservation n'ont rien en commun.
+var ORDERS_SHEET = 'Commandes';
+
+// Les trois colonnes de quantité portent les mêmes clés que PRODUITS dans
+// assets/js/config.js. Ajouter une référence au catalogue demande de l'ajouter
+// ici aussi, à la fin, pour ne pas décaler l'historique.
+var PRODUIT_CLES = ['Edition', 'Collection', 'Miniature'];
+
+var ORDER_HEADERS = ['ID', 'Horodatage', 'Nom', 'Telephone', 'Email', 'Remise',
+                     'Adresse', 'Edition', 'Collection', 'Miniature',
+                     'Total', 'Produits', 'Message', 'Statut'];
+
+var ORDER_STATUS_COLUMN = 14;
+var ORDER_ALLOWED_STATUS = ['En attente', 'Confirmée', 'Livrée', 'Annulée'];
+
 // --- Utilitaires ------------------------------------------------------------
 
 function getSheet_() {
@@ -85,6 +101,9 @@ function doPost(e) {
     }
 
     var data = JSON.parse(e.postData.contents);
+
+    // Une commande de liqueurs part vers sa propre feuille
+    if (data.type === 'commande') return saveOrder_(data);
 
     // Refus des demandes inexploitables : sans nom ni téléphone, on ne peut
     // ni rappeler le client ni confirmer la table.
@@ -158,6 +177,8 @@ function doGet(e) {
 
     if (action === 'list') return list_();
     if (action === 'update') return update_(params.id, params.status);
+    if (action === 'orders') return listOrders_();
+    if (action === 'updateOrder') return updateOrder_(params.id, params.status);
 
     return jsonOut_({ ok: false, error: 'Action inconnue' });
 
@@ -216,4 +237,142 @@ function update_(id, status) {
   }
 
   return jsonOut_({ ok: false, error: 'Réservation introuvable' });
+}
+
+// === COMMANDES DE LIQUEURS ==================================================
+
+function getOrdersSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(ORDERS_SHEET);
+
+  if (!sheet) {
+    sheet = ss.insertSheet(ORDERS_SHEET);
+    sheet.appendRow(ORDER_HEADERS);
+    sheet.setFrozenRows(1);
+    return sheet;
+  }
+
+  if (sheet.getLastColumn() < ORDER_HEADERS.length) {
+    sheet.getRange(1, 1, 1, ORDER_HEADERS.length).setValues([ORDER_HEADERS]);
+    sheet.setFrozenRows(1);
+  }
+
+  return sheet;
+}
+
+/** Quantité reçue pour une référence, bornée et toujours numérique. */
+function qte_(data, cle) {
+  var n = parseInt(data['q' + cle], 10);
+  if (isNaN(n) || n < 0) return 0;
+  return Math.min(n, 99);
+}
+
+function saveOrder_(data) {
+  if (!data.cname || !data.cphone) {
+    return jsonOut_({ ok: false, error: 'Nom et téléphone obligatoires' });
+  }
+
+  var total = 0;
+  var quantites = PRODUIT_CLES.map(function (cle) {
+    var n = qte_(data, cle);
+    total += n;
+    return n;
+  });
+
+  // Une commande sans bouteille n'a pas de sens
+  if (total === 0) {
+    return jsonOut_({ ok: false, error: 'Aucune bouteille commandée' });
+  }
+
+  var sheet = getOrdersSheet_();
+  var id = Utilities.getUuid();
+
+  var ligne = [
+    id,
+    new Date(),
+    clean_(data.cname),
+    clean_(data.cphone),
+    clean_(data.cemail),
+    clean_(data.cremise),
+    clean_(data.cadresse)
+  ].concat(quantites).concat([
+    clean_(data.ctotal),
+    clean_(data.cproduits),
+    clean_(data.cmessage),
+    'En attente'
+  ]);
+
+  sheet.appendRow(ligne);
+  notifyOrder_(data);
+
+  return jsonOut_({ ok: true, id: id });
+}
+
+/** Alerte email — une panne d'envoi ne doit pas faire échouer la commande. */
+function notifyOrder_(data) {
+  if (!NOTIFY_EMAIL) return;
+  try {
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      subject: 'Axwevi — commande de liqueurs : ' + data.cname,
+      body: [
+        'Nouvelle commande de liqueurs.',
+        '',
+        'Nom       : ' + (data.cname || ''),
+        'Téléphone : ' + (data.cphone || ''),
+        'Email     : ' + (data.cemail || '—'),
+        'Remise    : ' + (data.cremise || ''),
+        'Adresse   : ' + (data.cadresse || '—'),
+        'Bouteilles: ' + (data.cproduits || ''),
+        'Total     : ' + (data.ctotal || '') + ' FCFA',
+        'Message   : ' + (data.cmessage || '—'),
+        '',
+        'Rappelez le client pour convenir du règlement et de la remise.'
+      ].join('\n')
+    });
+  } catch (err) {
+    // volontairement ignoré
+  }
+}
+
+function listOrders_() {
+  var sheet = getOrdersSheet_();
+  var rows = sheet.getDataRange().getValues();
+
+  if (rows.length < 2) return jsonOut_({ ok: true, items: [] });
+
+  var tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+  var headers = rows.shift();
+
+  var items = rows.map(function (row) {
+    var obj = {};
+    headers.forEach(function (header, i) {
+      var value = row[i];
+      obj[header] = (value instanceof Date)
+        ? Utilities.formatDate(value, tz, "yyyy-MM-dd'T'HH:mm:ss")
+        : value;
+    });
+    return obj;
+  }).reverse();
+
+  return jsonOut_({ ok: true, items: items });
+}
+
+function updateOrder_(id, status) {
+  if (!id) return jsonOut_({ ok: false, error: 'Identifiant manquant' });
+  if (ORDER_ALLOWED_STATUS.indexOf(status) === -1) {
+    return jsonOut_({ ok: false, error: 'Statut non autorisé' });
+  }
+
+  var sheet = getOrdersSheet_();
+  var ids = sheet.getRange(1, 1, sheet.getLastRow(), 1).getValues();
+
+  for (var i = 1; i < ids.length; i++) {
+    if (ids[i][0] === id) {
+      sheet.getRange(i + 1, ORDER_STATUS_COLUMN).setValue(status);
+      return jsonOut_({ ok: true });
+    }
+  }
+
+  return jsonOut_({ ok: false, error: 'Commande introuvable' });
 }

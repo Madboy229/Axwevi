@@ -931,3 +931,20 @@ body.is-locked {
   .menu-panel[hidden] { display: block !important; }
   .dish { break-inside: avoid; }
 }
+
+/* Passerelle vers la boutique de liqueurs */
+.sig-card__link {
+  margin-top: 16px;
+  font-size: var(--step--1);
+}
+.sig-card__link a {
+  color: var(--terracotta-700);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(165, 71, 31, 0.35);
+  padding-bottom: 2px;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.sig-card__link a:hover {
+  color: var(--terracotta-900);
+  border-bottom-color: var(--terracotta-900);
+}

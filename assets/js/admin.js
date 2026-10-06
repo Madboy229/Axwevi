@@ -761,6 +761,14 @@
     listArea.appendChild(fragment);
   }
 
+  /* ------------------------------------------ Ouverture au volet Commandes */
+  // Le volet des commandes réutilise la connexion plutôt que de redemander la
+  // clé : il n'a accès qu'à l'appel réseau, jamais à la clé elle-même.
+  window.AXWEVI_ADMIN = {
+    call: function (params) { return call(params); },
+    estConnecte: function () { return Boolean(state.key); }
+  };
+
   /* ------------------------------------------------- Reprise de session -- */
 
   var saved = null;

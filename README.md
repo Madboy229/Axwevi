@@ -152,3 +152,37 @@ met la version en ligne à jour, en une minute environ.
 
 Pour garder le code source privé tout en gardant un hébergement gratuit,
 Netlify, Vercel ou Cloudflare Pages savent déployer depuis un dépôt privé.
+
+## Les liqueurs
+
+`liqueurs.html` présente les trois cuvées et porte le bon de commande. Le
+catalogue vit dans `PRODUITS` (`assets/js/config.js`) : nom, format, prix et
+descriptions. Les fiches de la page et les compteurs du formulaire en sont tous
+deux dérivés, donc un changement de prix se fait à un seul endroit.
+
+Le prix en euros est calculé, jamais saisi : le franc CFA est indexé sur l'euro
+à parité fixe (`EUR_PAR_FCFA`).
+
+Ajouter une référence demande deux gestes : une entrée dans `PRODUITS`, et la
+même clé ajoutée **à la fin** de `PRODUIT_CLES` et `ORDER_HEADERS` dans
+`apps-script/Code.gs`. L'ajouter ailleurs qu'à la fin décalerait les commandes
+déjà enregistrées.
+
+Aucun paiement ne transite par le site. La commande arrive dans l'onglet
+**Commandes** du tableau de bord, et l'équipe rappelle le client pour convenir
+du règlement et de la remise — retrait à Cotonou, livraison à Cotonou ou à Paris.
+
+Les commandes vivent dans une feuille `Commandes` séparée des réservations, et
+une case de confirmation d'âge est obligatoire avant l'envoi.
+
+## Organisation des scripts
+
+| Fichier | Portée |
+|---|---|
+| `config.js` | Réglages partagés : script, horaires, indicatifs, catalogue |
+| `nav.js` | Navigation, tiroir mobile, révélations — toutes les pages |
+| `phone.js` | Champ téléphone international — réservation et commande |
+| `site.js` | Page du restaurant : carte, créneaux, réservation |
+| `liqueurs.js` | Page des liqueurs : cuvées, panier, commande |
+| `admin.js` | Tableau de bord : réservations et salons VIP |
+| `admin-commandes.js` | Tableau de bord : volet Commandes |
