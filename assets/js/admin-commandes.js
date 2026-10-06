@@ -102,8 +102,8 @@
 
   function load() {
     var api = window.AXWEVI_ADMIN;
-    if (!api || !api.call) {
-      message("Connectez-vous d'abord sur l'onglet Réservations.", true);
+    if (!api || !api.call || !api.estConnecte()) {
+      message("Saisissez d'abord la clé d'accès sur l'onglet Réservations.", true);
       return;
     }
 
