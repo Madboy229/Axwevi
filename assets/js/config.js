@@ -64,6 +64,65 @@ window.AXWEVI_CONFIG = {
   // Le restaurant dispose de deux salons privatifs.
   VIP_ROOMS: ["Salon VIP 1", "Salon VIP 2"],
 
+  /* --- Les liqueurs -------------------------------------------------------
+     `cle` sert de nom de colonne dans le tableur : ne pas la changer une fois
+     des commandes enregistrées, sinon l'historique se décale.
+     Le franc CFA est indexé sur l'euro à parité fixe (1 € = 655,957 F), donc
+     le prix en euros se calcule et ne se périme pas. */
+  EUR_PAR_FCFA: 655.957,
+
+  PRODUITS: [
+    {
+      cle: "Edition",
+      nom: "Axwevi Édition",
+      format: "70 cl · coffret",
+      prix: 25000,
+      accroche: "Notes délicates de caramel",
+      texte: "Une cuvée ronde et généreuse en bouche. Une expression chaleureuse et gourmande, pensée pour une dégustation tout en douceur."
+    },
+    {
+      cle: "Collection",
+      nom: "Axwevi Collection",
+      format: "50 cl · coffret",
+      prix: 25000,
+      accroche: "Notes d'agrumes, amertume affirmée",
+      texte: "Une cuvée vive et structurée, dont l'amertume confère caractère et longueur en bouche. Destinée aux amateurs de profils aromatiques francs."
+    },
+    {
+      cle: "Miniature",
+      nom: "Axwevi Miniature",
+      format: "90 ml",
+      prix: 4500,
+      accroche: "Pour découvrir ou offrir",
+      texte: "Le format miniature de l'univers Axwevi. Une invitation à l'expérience, élégante et pratique pour le voyage."
+    }
+  ],
+
+  // Modes de remise proposés au moment de la commande
+  REMISES: [
+    {
+      cle: "Retrait",
+      nom: "Retrait au restaurant",
+      detail: "Saint Michel, Cotonou — aux heures de service",
+      adresse: false
+    },
+    {
+      cle: "Cotonou",
+      nom: "Livraison à Cotonou",
+      detail: "Frais convenus à l'appel, selon le quartier",
+      adresse: true
+    },
+    {
+      cle: "Paris",
+      nom: "Livraison à Paris",
+      detail: "Délai et frais confirmés à l'appel",
+      adresse: true
+    }
+  ],
+
+  // Plafond par référence sur une même commande
+  MAX_PAR_PRODUIT: 24,
+
   // Un salon peut servir deux fois dans la journée : une table le midi
   // n'empêche pas une table le soir. La disponibilité se compte par service.
   SERVICES: [

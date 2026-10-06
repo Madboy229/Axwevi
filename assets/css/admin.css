@@ -128,6 +128,72 @@ body {
   color: var(--cream-50);
 }
 
+/* --- Bascule Réservations / Commandes ------------------------------------ */
+
+.switch {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 24px;
+  background: var(--page-sunk, var(--cream-200));
+  border-radius: 999px;
+}
+.switch__btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  color: var(--ink-600);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.switch__btn:hover { color: var(--terracotta-700); }
+.switch__btn[aria-selected="true"] {
+  background: var(--ink-900);
+  color: var(--cream-50);
+}
+
+/* --- Les bouteilles d'une commande --------------------------------------- */
+
+.card__lot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: var(--cream-100);
+  border-radius: var(--radius-sm);
+}
+.lot__pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--cream-50);
+  border: 1px solid var(--line);
+  font-size: var(--step--1);
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+.lot__pill--empty {
+  color: var(--ink-400);
+  font-style: italic;
+}
+.lot__total {
+  margin-left: auto;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-weight: 600;
+  color: var(--terracotta-700);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.badge--livree { background: rgba(63, 125, 78, 0.22); color: #2f6b3d; }
+.card[data-status="Livrée"] { border-left-color: var(--ok); }
+.card[data-status="Annulée"] { border-left-color: var(--err); }
+
 /* --- Statistiques -------------------------------------------------------- */
 
 .stats {

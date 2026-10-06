@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="assets/css/tokens.css?v=20260924f">
-<link rel="stylesheet" href="assets/css/admin.css?v=20260924f">
+<link rel="stylesheet" href="assets/css/tokens.css?v=20260924g">
+<link rel="stylesheet" href="assets/css/admin.css?v=20260924g">
 </head>
 <body>
 
@@ -54,6 +54,12 @@
       </div>
     </div>
 
+    <div class="switch" role="tablist" aria-label="Que consulter">
+      <button class="switch__btn" id="tabResas" type="button" role="tab" aria-selected="true">Réservations</button>
+      <button class="switch__btn" id="tabCommandes" type="button" role="tab" aria-selected="false">Commandes</button>
+    </div>
+
+    <div id="viewResas">
     <div class="stats">
       <div class="stat">
         <div class="stat__value" id="statTotal">0</div>
@@ -115,10 +121,48 @@
     </div>
 
     <div id="listArea" aria-live="polite"></div>
+    </div><!-- /viewResas -->
+
+    <div id="viewCommandes" hidden>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat__value" id="cmdTotal">0</div>
+          <div class="stat__label">Commandes</div>
+        </div>
+        <div class="stat">
+          <div class="stat__value" id="cmdAttente">0</div>
+          <div class="stat__label">À rappeler</div>
+        </div>
+        <div class="stat">
+          <div class="stat__value" id="cmdBouteilles">0</div>
+          <div class="stat__label">Bouteilles</div>
+        </div>
+        <div class="stat stat--vip">
+          <div class="stat__value" id="cmdMontant">0</div>
+          <div class="stat__label">Francs CFA</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <span class="toolbar__label">Statut</span>
+        <button class="chip" data-order-filter="all" type="button" aria-pressed="true">Toutes</button>
+        <button class="chip" data-order-filter="En attente" type="button" aria-pressed="false">À rappeler</button>
+        <button class="chip" data-order-filter="Confirmée" type="button" aria-pressed="false">Confirmées</button>
+        <button class="chip" data-order-filter="Livrée" type="button" aria-pressed="false">Livrées</button>
+        <button class="chip" data-order-filter="Annulée" type="button" aria-pressed="false">Annulées</button>
+
+        <label class="visually-hidden" for="orderSearch">Rechercher une commande</label>
+        <input class="toolbar__search" id="orderSearch" type="search"
+               placeholder="Rechercher un nom, un numéro…">
+      </div>
+
+      <div id="orderArea" aria-live="polite"></div>
+    </div><!-- /viewCommandes -->
   </div>
 </div>
 
-<script src="assets/js/config.js?v=20260924f"></script>
-<script src="assets/js/admin.js?v=20260924f"></script>
+<script src="assets/js/config.js?v=20260924g"></script>
+<script src="assets/js/admin.js?v=20260924g"></script>
+<script src="assets/js/admin-commandes.js?v=20260924g"></script>
 </body>
 </html>

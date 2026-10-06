@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Les liqueurs Axwevi — Créations artisanales du Bénin</title>
+<meta name="description" content="Les liqueurs artisanales Axwevi : macération d'épices, de plantes aromatiques et de fruits secs du terroir béninois. Commande en ligne, retrait à Cotonou, livraison Cotonou et Paris.">
+<meta name="theme-color" content="#a5471f">
+<link rel="canonical" href="https://madboy229.github.io/Axwevi/liqueurs.html">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Axwevi">
+<meta property="og:title" content="Les liqueurs Axwevi">
+<meta property="og:description" content="Créations artisanales nées d'un assemblage d'épices, de plantes aromatiques et de fruits secs du terroir béninois.">
+<meta property="og:url" content="https://madboy229.github.io/Axwevi/liqueurs.html">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23a5471f'/><text x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='700' fill='%23f4ead9' text-anchor='middle'>A</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Cormorant+Garamond:ital,wght@1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/tokens.css?v=20260924g">
+<link rel="stylesheet" href="assets/css/site.css?v=20260924g">
+<link rel="stylesheet" href="assets/css/liqueurs.css?v=20260924g">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Aller au contenu</a>
+
+<nav class="nav" id="nav">
+  <a class="nav__mark" href="index.html" aria-label="Axwevi, retour à l'accueil">AXWEVI</a>
+
+  <ul class="nav__links" id="navLinks">
+    <li><a href="index.html#histoire">Le restaurant</a></li>
+    <li><a href="#cuvees">Les cuvées</a></li>
+    <li><a href="#commander">Commander</a></li>
+  </ul>
+
+  <a class="btn nav__cta" href="#commander">Commander</a>
+
+  <button class="nav__burger" id="navBurger" type="button"
+          aria-expanded="false" aria-controls="navLinks" aria-label="Ouvrir le menu">
+    <span></span>
+  </button>
+
+  <div class="nav__scrim" id="navScrim"></div>
+</nav>
+
+<header class="hero hero--liqueurs" id="top">
+  <p class="eyebrow hero__eyebrow">Maison Axwevi · Cotonou</p>
+  <h1 class="hero__title">Les liqueurs</h1>
+  <p class="hero__tagline script">Un secret de famille, mis en bouteille</p>
+
+  <div class="hero__cta-row">
+    <a href="#cuvees" class="btn btn--solid">Découvrir les cuvées</a>
+    <a href="#commander" class="btn btn--ghost">Commander</a>
+  </div>
+
+  <p class="hero__meta">Retrait à Cotonou · Livraison Cotonou et Paris</p>
+</header>
+
+<div class="motif" aria-hidden="true"></div>
+
+<main id="main">
+
+  <!-- ====================== INTENTION ====================== -->
+  <section class="intention">
+    <div class="wrap">
+      <p class="intention__text reveal">Créations artisanales nées d'un assemblage subtil d'<strong>épices</strong>, de <strong>plantes aromatiques</strong> et de <strong>fruits secs</strong> issus du terroir local. Chaque cuvée révèle une signature aromatique singulière, fruit d'une macération patiente et d'un savoir-faire transmis avec exigence.</p>
+    </div>
+  </section>
+
+  <!-- ====================== CUVÉES ====================== -->
+  <section class="cuvees" id="cuvees">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Trois expressions</span>
+        <h2>Nos cuvées</h2>
+      </div>
+
+      <!-- Construit par liqueurs.js depuis config.js : une seule source de vérité
+           pour les noms, les formats et les prix, partagée avec le bon de commande. -->
+      <div class="cuvee-list" id="cuveeList"></div>
+
+      <p class="menu__note">Prix en francs CFA. L'équivalent en euros est donné à titre indicatif, le franc CFA étant indexé sur l'euro à parité fixe.</p>
+    </div>
+  </section>
+
+  <!-- ====================== COMMANDE ====================== -->
+  <section class="order" id="commander">
+    <div class="wrap">
+      <div class="reserve__panel reveal">
+        <div class="order__top">
+
+          <div class="order__intro">
+            <span class="eyebrow">Commander</span>
+            <h2>Votre commande en quelques lignes</h2>
+            <p>Choisissez vos bouteilles et laissez-nous vos coordonnées. Nous vous rappelons pour convenir du règlement et de la remise — aucun paiement n'est demandé sur ce site.</p>
+
+            <div style="margin-top:30px;">
+              <div class="infos-row"><span>Rappel sous</span><span>24h</span></div>
+              <div class="infos-row"><span>Règlement</span><span>À l'appel</span></div>
+              <div class="infos-row"><span>Grandes quantités</span><span>Nous appeler</span></div>
+            </div>
+
+            <!-- Récapitulatif tenu à jour par liqueurs.js -->
+            <div class="order__recap" id="orderRecap" aria-live="polite"></div>
+          </div>
+
+          <form class="order-form" id="orderForm" novalidate>
+
+            <div class="field">
+              <span class="field__label" id="panierLabel">Vos bouteilles *</span>
+              <div class="panier" id="panier" role="group" aria-labelledby="panierLabel"></div>
+              <p class="field__error" id="err-panier"></p>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="cname">Nom complet *</label>
+                <input type="text" id="cname" name="cname" placeholder="Votre nom"
+                       autocomplete="name" required aria-describedby="err-cname">
+                <p class="field__error" id="err-cname"></p>
+              </div>
+              <div class="field">
+                <label for="cemail">Email (optionnel)</label>
+                <input type="email" id="cemail" name="cemail" placeholder="vous@email.com"
+                       autocomplete="email" aria-describedby="err-cemail">
+                <p class="field__error" id="err-cemail"></p>
+              </div>
+            </div>
+
+            <div class="form-row form-row--phone">
+              <div class="field">
+                <label for="cphone">Téléphone *</label>
+                <div class="phone">
+                  <label class="visually-hidden" for="cdial">Indicatif du pays</label>
+                  <select class="phone__dial" id="cdial" name="cdial"></select>
+                  <input type="tel" id="cphone" name="cphone" placeholder="01 61 54 41 99"
+                         autocomplete="tel-national" inputmode="tel"
+                         required aria-describedby="err-cphone">
+                </div>
+                <p class="field__error" id="err-cphone"></p>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field__label" id="remiseLabel">Comment la recevoir ? *</span>
+              <div class="choice choice--stack" id="remiseGroup" role="radiogroup" aria-labelledby="remiseLabel"></div>
+              <p class="field__error" id="err-remise"></p>
+            </div>
+
+            <div class="field" id="adresseField" hidden>
+              <label for="cadresse">Adresse de livraison *</label>
+              <textarea id="cadresse" name="cadresse" maxlength="400"
+                        placeholder="Quartier, rue, repère — ou adresse complète"
+                        aria-describedby="err-cadresse"></textarea>
+              <p class="field__error" id="err-cadresse"></p>
+            </div>
+
+            <div class="field">
+              <label for="cmessage">Précisions (occasion, emballage cadeau…)</label>
+              <textarea id="cmessage" name="cmessage" maxlength="700"
+                        placeholder="Un message pour la maison Axwevi"></textarea>
+            </div>
+
+            <div class="field">
+              <label class="age">
+                <input type="checkbox" id="cage" name="cage" required>
+                <span>Je certifie avoir <strong>18 ans révolus</strong>. L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</span>
+              </label>
+              <p class="field__error" id="err-cage"></p>
+            </div>
+
+            <p class="form-note">Les champs marqués d'une * sont nécessaires pour traiter votre commande.</p>
+            <button type="submit" class="btn btn--dark" id="orderBtn">Envoyer la commande</button>
+
+            <div class="confirm" id="orderConfirm" role="status" aria-live="polite"></div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-mark">AXWEVI</div>
+    <div class="foot-tag script">L'art culinaire africain</div>
+    <ul class="foot-links">
+      <li><a href="index.html">Le restaurant</a></li>
+      <li><a href="index.html#menu">La carte</a></li>
+      <li><a href="#cuvees">Les liqueurs</a></li>
+      <li><a href="tel:+2290161544199">+229 01 61 54 41 99</a></li>
+      <li><a href="https://www.instagram.com/axwevi.restaurant/" target="_blank" rel="noopener">Instagram</a></li>
+    </ul>
+    <div class="foot-bottom">© <span id="year"></span> Axwevi · Saint Michel, Cotonou · L'abus d'alcool est dangereux pour la santé</div>
+  </div>
+</footer>
+
+<script src="assets/js/config.js?v=20260924g"></script>
+<script src="assets/js/phone.js?v=20260924g"></script>
+<script src="assets/js/nav.js?v=20260924g"></script>
+<script src="assets/js/liqueurs.js?v=20260924g"></script>
+</body>
+</html>
